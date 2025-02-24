@@ -1,8 +1,6 @@
-"use client";
-
-const Background = ({ children }) => {
+export default function Background() {
   return (
-    <body className="antialiased w-screen h-screen relative">{children}</body>
+    <body>
+    </body>
   );
-};
-export default Background;
+}

@@ -1,9 +1,17 @@
 "use client";
 
-import { motion, useScroll, useInView, useMotionValue } from "motion/react";
+import {
+  motion,
+  useScroll,
+  useInView,
+  useMotionValue,
+  useMotionValueEvent,
+  useSpring,
+} from "motion/react";
 import { useEffect, useState, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useGLTF, PositionalAudio } from "@react-three/drei";
+import * as THREE from "three";
 
 const images = [
   "https://images.unsplash.com/photo-1738430275589-2cd3d0d0d57a?q=80&w=2061&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -53,7 +61,7 @@ const Item = ({ src, index }) => {
   );
 };
 
-function Model({ ready }) {
+function Model() {
   const group = useRef();
   const { nodes, materials } = useGLTF("/scene-draco.glb");
 
@@ -83,7 +91,7 @@ function Model({ ready }) {
         <group position={[100000, 120000, 2000]}></group>
         <mesh position={[250000, -200000, 50000]}>
           <sphereGeometry args={[30000, 32, 32]} />
-          <meshBasicMaterial color="#ff1020" />
+          <meshBasicMaterial color="#4d080c" />
         </mesh>
       </group>
     </group>
@@ -91,36 +99,80 @@ function Model({ ready }) {
 }
 
 export default function Web() {
+  const { scrollY } = useScroll();
+
+  const minFov = 80;
+  const maxFov = 125;
+  const differenceOfFovs = maxFov - minFov;
+
+  const minY = 4;
+  const maxY = 0;
+  const differenceOfY = maxY - minY;
+
+  const sectionRef = useRef(null);
+  const camera = useRef(new THREE.PerspectiveCamera(minFov));
+  camera.current.position.set(0, minY, 20);
+
   useEffect(() => {
     document.documentElement.scrollTop = 0;
+
+    const handleScroll = () => {
+      const scrollYValue = window.scrollY;
+      const sectionHeight = sectionRef.current?.clientHeight || 1;
+
+      if (scrollYValue > sectionHeight) {
+        return;
+      }
+
+      const scrollRatio = scrollYValue / sectionHeight;
+
+      const newFov = minFov + scrollRatio * differenceOfFovs;
+      const newY = minY + scrollRatio * differenceOfY;
+
+      camera.current.fov = newFov;
+      camera.current.position.setY(newY);
+      camera.current.updateProjectionMatrix();
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
+
+  const y = useSpring(50);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const startSpaceToScroll = sectionRef.current?.clientHeight * 0.2;
+    const endSpaceToScroll = sectionRef.current?.clientHeight * 0.4;
+
+    if (latest > startSpaceToScroll && latest < endSpaceToScroll) {
+      const scrollRatio =
+        (latest - startSpaceToScroll) / (endSpaceToScroll - startSpaceToScroll);
+      y.set(50 - scrollRatio * 200);
+    }
+  });
 
   return (
     <>
       <section
+        ref={sectionRef}
         className="w-full h-screen flex items-center justify-center"
         style={{ background: "#000" }}
       >
-        <Canvas camera={{ position: [0, 6, 20], fov: 40 }}>
-          <fog attach="fog" args={["#cc7b32", 0, 500]} />
-          <Model ready={true} />
+        <Canvas camera={camera.current}>
+          <fog attach="fog" args={["#4d080c", 0, 500]} />
+          <Model />
         </Canvas>
       </section>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "16px",
-          maxWidth: "720px",
-          margin: "0 auto",
-        }}
+      <motion.section
+        style={{ y }}
+        className="flex flex-wrap items-center justify-center gap-4 max-w-[720px] mx-auto"
       >
         {images.map((src, index) => {
           return <Item key={index} src={src} index={index} />;
         })}
-      </div>
+      </motion.section>
     </>
   );
 }

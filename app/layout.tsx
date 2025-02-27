@@ -29,10 +29,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`no-scrollbar ${geistSans.className}`}
+      className={`no-scrollbar dark ${geistSans.className}`}
       suppressHydrationWarning
     >
-      <body className="bg-background text-foreground">
+      <body className="dark bg-background text-foreground">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

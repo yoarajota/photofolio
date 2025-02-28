@@ -96,7 +96,7 @@ export default function GridImages({ sectionRef }) {
     <motion.section
       ref={gridRef}
       style={{ y }}
-      className="mx-auto relative columns-xs gap-4 px-4 sm:px-12 max-w-7xl"
+      className="mx-auto relative columns-2xs sm:columns-xs gap-4 px-4 sm:px-12 max-w-7xl"
     >
       {items.map(({ src, id }, index) => (
         <Item key={id} src={src} index={index} />

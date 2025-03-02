@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="pt-BR"
       className={`no-scrollbar dark ${geistSans.className}`}
       suppressHydrationWarning
     >
@@ -43,10 +43,6 @@ export default function RootLayout({
             <div className="flex-1 w-full flex flex-col items-center">
               <nav className="w-full flex justify-center h-16"></nav>
               <div className="h-full w-full flex-1">{children}</div>
-
-              <footer className="w-full flex items-center justify-center border-t mx-auto text-center text-xs gap-8 py-8">
-                <ThemeSwitcher />
-              </footer>
             </div>
           </main>
         </ThemeProvider>

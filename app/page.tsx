@@ -1,8 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { Suspense, useRef } from "react";
 import GridImages from "@/components/pages/landing-page/GridImages";
 import AnimatedCityModel from "@/components/pages/landing-page/AnimatedCityModel";
+import LoadingLPModal from "@/components/pages/landing-page/LoadingLPModal";
+import { AnimatePresence } from "motion/react";
 
 export default function Web() {
   const sectionRef = useRef(null);
@@ -16,7 +18,14 @@ export default function Web() {
         <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl absolute left-[5%] top-[15%] transform-gpu">
           Taxing Laughter: The Joke Tax Chronicles
         </h1>
-        <AnimatedCityModel sectionRef={sectionRef} />
+        
+        <LoadingLPModal />
+
+        <AnimatePresence>
+          <AnimatedCityModel sectionRef={sectionRef} />
+        </AnimatePresence>
+
+        <div className="absolute bottom-0 bg-gradient-to-b from-transparent to-background w-full h-24" />
       </section>
       <GridImages sectionRef={sectionRef} />
     </>

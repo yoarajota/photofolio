@@ -102,8 +102,6 @@ export default function AnimatedCityModel({ sectionRef }) {
             <fog attach="fog" args={["#4d080c", 0, 200]} />
             <Model />
         </Canvas>
-
-        <div className="absolute bottom-0 bg-gradient-to-b from-transparent to-background w-full h-24" />
     </>
   );
 }

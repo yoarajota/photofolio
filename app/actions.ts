@@ -71,7 +71,7 @@ export const sendOTPCode = async (formData: FormData) => {
     return encodedRedirect("error", "/sign-in", error.message);
   }
 
-  return redirect("/sign-in/verify-otp");
+  return redirect(`/sign-in/verify-otp?email=${email}`);
 };
 
 export const verifyOTPToken = async (formData: FormData) => {

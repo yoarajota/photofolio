@@ -2,6 +2,7 @@ import DeployButton from "@/components/deploy-button";
 import { EnvVarWarning } from "@/components/env-var-warning";
 import HeaderAuth from "@/components/header-auth";
 import { ThemeSwitcher } from "@/components/theme-switcher";
+import { Toaster } from "@/components/ui/sonner"
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
@@ -45,6 +46,8 @@ export default function RootLayout({
               <div className="h-full w-full flex-1">{children}</div>
             </div>
           </main>
+
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

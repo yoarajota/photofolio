@@ -21,7 +21,7 @@ export default async function VerifyOTP(props: {
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-2">
-            <div className="p-3 rounded-full border">
+            <div className="p-1 rounded-full">
               <KeyRound className="h-6 w-6 text-primary" />
             </div>
           </div>

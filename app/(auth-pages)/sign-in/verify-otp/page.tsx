@@ -1,48 +1,60 @@
-import { verifyOTPToken } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
-import { SubmitButton } from "@/components/submit-button";
-import { Input } from "@/components/ui/input";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-  InputOTPSeparator,
-} from "@/components/ui/input-otp";
+import { verifyOTPToken } from "@/app/actions"
+import { FormMessage, type Message } from "@/components/form-message"
+import { SubmitButton } from "@/components/submit-button"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "@/components/ui/input-otp"
+import { KeyRound } from "lucide-react"
+import Link from "next/link"
 
-export default async function Login(props: {
-  searchParams: Promise<{
-    email: string;
-  }>;
+export default async function VerifyOTP(props: {
+  searchParams: Promise<Message & {
+    email: string
+  }>
 }) {
-  const searchParams = await props.searchParams;
+  const searchParams = await props.searchParams
+  const email = searchParams.email || ""
 
   return (
-    <form className="flex-1 flex flex-col min-w-64 mx-auto">
-      <h1 className="text-2xl font-medium">Insira o código de acesso:</h1>
-      <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
-        <Input name="email" type="hidden" required value={searchParams.email} />
+    <div className="flex items-center justify-center min-h-screen p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="space-y-1">
+          <div className="flex justify-center mb-2">
+            <div className="p-3 rounded-full border">
+              <KeyRound className="h-6 w-6 text-primary" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold text-center">Verificação</CardTitle>
+          <CardDescription className="text-center">Insira o código de 6 dígitos enviado para {email}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-6">
+            <Input name="email" type="hidden" required value={email} />
 
-        <InputOTP
-          maxLength={6}
-          containerClassName="justify-center"
-          name="token"
-        >
-          <InputOTPGroup>
-            <InputOTPSlot index={0} />
-            <InputOTPSlot index={1} />
-            <InputOTPSlot index={2} />
-            <InputOTPSlot index={3} />
-            <InputOTPSlot index={4} />
-            <InputOTPSlot index={5} />
-          </InputOTPGroup>
-        </InputOTP>
+            <div className="space-y-2">
+              <div className="flex justify-center">
+                <InputOTP maxLength={6} containerClassName="justify-center gap-2" name="token">
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
+              </div>
+            </div>
 
-        <SubmitButton pendingText="Entrando..." formAction={verifyOTPToken}>
-          Entrar
-        </SubmitButton>
+            <SubmitButton pendingText="Verificando..." formAction={verifyOTPToken} className="w-full">
+              Verificar código
+            </SubmitButton>
 
-        <FormMessage message={searchParams} />
-      </div>
-    </form>
-  );
+            <FormMessage message={searchParams as Message} />
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  )
 }

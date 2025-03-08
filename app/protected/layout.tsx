@@ -15,6 +15,7 @@ import { ImageUploader } from "@/components/pages/protected/ImageUploader"
 import { RouteManager } from "@/components/pages/protected/RouteManager"
 import { SalesOverview } from "@/components/pages/protected/SalesOverview"
 import { SettingsForm } from "@/components/pages/protected/SettingsForm"
+import { signOutAction } from "@/app/actions";
 
 export default function RootLayout({
   children,
@@ -128,7 +129,11 @@ export default function RootLayout({
                 {route.label}
               </Link>
             ))}
-            <Button variant="outline" className="mt-auto flex items-center gap-2 justify-start">
+            <Button 
+              variant="outline" 
+              className="mt-auto flex items-center gap-2 justify-start" 
+              onClick={signOutAction} 
+            >
               <LogOut className="h-5 w-5" />
               Sair
             </Button>

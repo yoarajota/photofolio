@@ -1,23 +1,37 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-import { type ComponentProps } from "react";
-import { useFormStatus } from "react-dom";
+import type React from "react"
 
-type Props = ComponentProps<typeof Button> & {
-  pendingText?: string;
-};
+import { Button } from "@/components/ui/button"
+import { Loader2 } from "lucide-react"
+import { useFormStatus } from "react-dom"
+
+interface SubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  pendingText?: string
+  children: React.ReactNode
+  formAction?: (formData: FormData) => Promise<void> | void
+}
 
 export function SubmitButton({
-  children,
   pendingText = "Submitting...",
+  children,
+  formAction,
+  className,
   ...props
-}: Props) {
-  const { pending } = useFormStatus();
+}: SubmitButtonProps) {
+  const { pending } = useFormStatus()
 
   return (
-    <Button type="submit" aria-disabled={pending} {...props}>
-      {pending ? pendingText : children}
+    <Button type="submit" formAction={formAction} disabled={pending} className={className} {...props}>
+      {pending ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          {pendingText}
+        </>
+      ) : (
+        children
+      )}
     </Button>
-  );
+  )
 }
+

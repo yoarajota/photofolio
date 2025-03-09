@@ -1,12 +1,10 @@
 import { verifyOTPToken } from "@/app/actions"
 import { FormMessage, type Message } from "@/components/form-message"
 import { SubmitButton } from "@/components/submit-button"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "@/components/ui/input-otp"
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
 import { KeyRound } from "lucide-react"
-import Link from "next/link"
 
 export default async function VerifyOTP(props: {
   searchParams: Promise<Message & {

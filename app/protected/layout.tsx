@@ -1,20 +1,13 @@
-
 "use client"
 
-import { ImageIcon, LayoutDashboard, LogOut, Menu, Package, Settings, ShoppingCart, Users } from "lucide-react"
+import { ImageIcon, LayoutDashboard, LogOut, Menu, Package, Settings } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ImageUploader } from "@/components/pages/protected/ImageUploader"
-import { RouteManager } from "@/components/pages/protected/RouteManager"
-import { SalesOverview } from "@/components/pages/protected/SalesOverview"
-import { SettingsForm } from "@/components/pages/protected/SettingsForm"
 import { signOutAction } from "@/app/actions";
 
 export default function RootLayout({
@@ -28,50 +21,29 @@ export default function RootLayout({
     {
       label: "Dashboard",
       icon: LayoutDashboard,
-      href: "/dashboard",
+      href: "/protected",
       color: "text-sky-500",
-      active: pathname === "/dashboard",
+      active: pathname === "/protected",
     },
     {
-      label: "Imagens",
-      icon: ImageIcon,
-      href: "/dashboard/images",
-      color: "text-pink-500",
-      active: pathname === "/dashboard/images",
-    },
-    {
-      label: "Rotas",
+      label: "Trabalhos",
       icon: Package,
-      href: "/dashboard/routes",
+      href: "/protected/works",
       color: "text-violet-500",
-      active: pathname === "/dashboard/routes",
-    },
-    {
-      label: "Vendas",
-      icon: ShoppingCart,
-      href: "/dashboard/sales",
-      color: "text-orange-500",
-      active: pathname === "/dashboard/sales",
-    },
-    {
-      label: "Usuários",
-      icon: Users,
-      href: "/dashboard/users",
-      color: "text-green-500",
-      active: pathname === "/dashboard/users",
+      active: pathname === "/protected/works",
     },
     {
       label: "Configurações",
       icon: Settings,
-      href: "/dashboard/settings",
+      href: "/protected?tab=settings",
       color: "text-gray-500",
-      active: pathname === "/dashboard/settings",
+      active: pathname === "/protected?tab=settings",
     },
   ]
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40">
-      <nav className="flex h-16 items-center gap-4 border-b bg-background px-6">
+    <div className="flex h-screen w-full flex-col">
+      <nav className="flex h-16 items-center gap-4 border-b bg-background px-6 fixed w-full z-10">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="md:hidden">
@@ -114,8 +86,8 @@ export default function RootLayout({
           </Avatar>
         </div>
       </nav>
-      <div className="flex flex-1">
-        <aside className="hidden w-64 border-r bg-background md:flex md:flex-col">
+      <div className="flex flex-1 pt-16">
+        <aside className="hidden w-64 border-r bg-background md:flex md:flex-col fixed h-full">
           <div className="flex flex-col gap-2 p-4">
             {routes.map((route) => (
               <Link
@@ -139,8 +111,8 @@ export default function RootLayout({
             </Button>
           </div>
         </aside>
-        <main className="flex flex-1 flex-col gap-6 p-4 md:p-6">
-        {children}
+        <main className="flex flex-1 flex-col gap-6 p-4 md:p-6 overflow-auto md:ml-64 bg-muted/40">
+          {children}
         </main>
       </div>
     </div>

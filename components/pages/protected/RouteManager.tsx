@@ -28,12 +28,12 @@ type RouteType = {
   order: number;
 };
 
-function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, routesLength }: {
+function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, worksLength }: {
   id: string;
   route: RouteType;
   handleUpdateRoute: (id: string, field: keyof RouteType, value: string | boolean) => void;
   handleRemoveRoute: (id: string) => void;
-  routesLength: number;
+  worksLength: number;
 }) {
   const {
     attributes,
@@ -118,7 +118,7 @@ function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, routesL
                 variant="destructive"
                 size="icon"
                 onClick={() => handleRemoveRoute(route.id)}
-                disabled={routesLength <= 1}
+                disabled={worksLength <= 1}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -131,19 +131,15 @@ function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, routesL
 }
 
 export function RouteManager() {
-  const [routes, setRoutes] = useState<RouteType[]>([
+  const [works, setWorks] = useState<RouteType[]>([
     { id: "1", title: "Início", path: "/", type: "gallery", active: true, order: 0 },
-    { id: "2", title: "Retratos", path: "/retratos", type: "gallery", active: true, order: 1 },
-    { id: "3", title: "Paisagens", path: "/paisagens", type: "gallery", active: true, order: 2 },
-    { id: "4", title: "Sobre", path: "/sobre", type: "about", active: true, order: 3 },
-    { id: "5", title: "Contato", path: "/contato", type: "contact", active: true, order: 4 },
   ]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      setRoutes((items) => {
+      setWorks((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over?.id);
 
@@ -161,26 +157,26 @@ export function RouteManager() {
     const newRoute: RouteType = {
       id: Math.random().toString(36).substring(2, 9),
       title: "Nova Página",
-      path: `/nova-pagina-${routes.length + 1}`,
+      path: `/nova-pagina-${works.length + 1}`,
       type: "page",
       active: true,
-      order: routes.length,
+      order: works.length,
     };
-    setRoutes([...routes, newRoute]);
+    setWorks([...works, newRoute]);
   };
 
   const handleRemoveRoute = (id: string) => {
-    setRoutes(routes.filter((route) => route.id !== id));
+    setWorks(works.filter((route) => route.id !== id));
   };
 
   const handleUpdateRoute = (id: string, field: keyof RouteType, value: any) => {
-    setRoutes(routes.map((route) => (route.id === id ? { ...route, [field]: value } : route)));
+    setWorks(works.map((route) => (route.id === id ? { ...route, [field]: value } : route)));
   };
 
-  const handleSaveRoutes = () => {
+  const handleSaveWorks = () => {
     // Here you would implement the actual save logic
-    toast("Rotas salvas com sucesso", {
-      description: `${routes.length} rotas foram configuradas.`,
+    toast("Trabalho salvo com sucesso", {
+      description: `${works.length} trabalhos foram configuradas.`,
     });
   };
 
@@ -188,15 +184,15 @@ export function RouteManager() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-medium">Páginas e Rotas</h3>
-          <p className="text-sm text-muted-foreground">Arraste para reordenar as páginas no menu de navegação.</p>
+          <h3 className="text-lg font-medium">Páginas de Trabalhos</h3>
+          <p className="text-sm text-muted-foreground">Lorem Impsum.</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleAddRoute}>
             <Plus className="mr-2 h-4 w-4" />
             Nova Página
           </Button>
-          <Button onClick={handleSaveRoutes}>
+          <Button onClick={handleSaveWorks}>
             <Save className="mr-2 h-4 w-4" />
             Salvar Alterações
           </Button>
@@ -204,16 +200,16 @@ export function RouteManager() {
       </div>
 
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={routes} strategy={verticalListSortingStrategy}>
+        <SortableContext items={works} strategy={verticalListSortingStrategy}>
           <div className="space-y-2">
-            {routes.map((route) => (
+            {works.map((route) => (
               <SortableItem
                 key={route.id}
                 id={route.id}
                 route={route}
                 handleUpdateRoute={handleUpdateRoute}
                 handleRemoveRoute={handleRemoveRoute}
-                routesLength={routes.length}
+                worksLength={works.length}
               />
             ))}
           </div>

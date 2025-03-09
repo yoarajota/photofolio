@@ -29,16 +29,14 @@ export default function RootLayout({
       className={`no-scrollbar dark ${geistSans.className}`}
       suppressHydrationWarning
     >
-      <body className="dark bg-background text-foreground">
+      <body className="min-h-screen dark bg-background text-foreground">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <main className="min-h-screen flex flex-col items-center">
-            {children}
-          </main>
+          {children}
 
           <Toaster />
         </ThemeProvider>

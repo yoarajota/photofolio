@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useGLTF, PositionalAudio } from "@react-three/drei";
+import { useEffect, useRef } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { useMotionValueEvent, useScroll, useSpring } from "motion/react";
 

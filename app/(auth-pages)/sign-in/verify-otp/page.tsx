@@ -15,7 +15,7 @@ export default async function VerifyOTP(props: {
   const email = searchParams.email || ""
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
+    <div className="flex items-center justify-center min-h-screen p-4 mx-auto">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-2">

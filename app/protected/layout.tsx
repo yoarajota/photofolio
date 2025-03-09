@@ -2,7 +2,7 @@
 
 import { ImageIcon, LayoutDashboard, LogOut, Menu, Package, Settings } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -16,6 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   const routes = [
     {
@@ -23,21 +24,21 @@ export default function RootLayout({
       icon: LayoutDashboard,
       href: "/protected",
       color: "text-sky-500",
-      active: pathname === "/protected",
+      active: pathname === "/protected" && searchParams.get("tab") !== "settings",
     },
     {
       label: "Trabalhos",
       icon: Package,
-      href: "/protected/works",
+      href: "/protected/jobs",
       color: "text-violet-500",
-      active: pathname === "/protected/works",
+      active: pathname === "/protected/jobs",
     },
     {
       label: "Configurações",
       icon: Settings,
       href: "/protected?tab=settings",
       color: "text-gray-500",
-      active: pathname === "/protected?tab=settings",
+      active: pathname === "/protected" && searchParams.get("tab") === "settings",
     },
   ]
 

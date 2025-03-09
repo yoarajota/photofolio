@@ -25,7 +25,7 @@
   - Middleware
   - Client
   - Server
-  - It just works!
+  - It just jobs!
 - supabase-ssr. A package to configure Supabase Auth to use cookies
 - Styling with [Tailwind CSS](https://tailwindcss.com)
 - Components with [shadcn/ui](https://ui.shadcn.com/)

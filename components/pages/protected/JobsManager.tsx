@@ -28,12 +28,12 @@ type RouteType = {
   order: number;
 };
 
-function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, worksLength }: {
+function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, jobsLength }: {
   id: string;
   route: RouteType;
   handleUpdateRoute: (id: string, field: keyof RouteType, value: string | boolean) => void;
   handleRemoveRoute: (id: string) => void;
-  worksLength: number;
+  jobsLength: number;
 }) {
   const {
     attributes,
@@ -118,7 +118,7 @@ function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, worksLe
                 variant="destructive"
                 size="icon"
                 onClick={() => handleRemoveRoute(route.id)}
-                disabled={worksLength <= 1}
+                disabled={jobsLength <= 1}
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -130,8 +130,8 @@ function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, worksLe
   );
 }
 
-export function RouteManager() {
-  const [works, setWorks] = useState<RouteType[]>([
+export function JobsManager() {
+  const [jobs, setJobs] = useState<RouteType[]>([
     { id: "1", title: "Início", path: "/", type: "gallery", active: true, order: 0 },
   ]);
 
@@ -139,7 +139,7 @@ export function RouteManager() {
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      setWorks((items) => {
+      setJobs((items) => {
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over?.id);
 
@@ -157,26 +157,26 @@ export function RouteManager() {
     const newRoute: RouteType = {
       id: Math.random().toString(36).substring(2, 9),
       title: "Nova Página",
-      path: `/nova-pagina-${works.length + 1}`,
+      path: `/nova-pagina-${jobs.length + 1}`,
       type: "page",
       active: true,
-      order: works.length,
+      order: jobs.length,
     };
-    setWorks([...works, newRoute]);
+    setJobs([...jobs, newRoute]);
   };
 
   const handleRemoveRoute = (id: string) => {
-    setWorks(works.filter((route) => route.id !== id));
+    setJobs(jobs.filter((route) => route.id !== id));
   };
 
-  const handleUpdateRoute = (id: string, field: keyof RouteType, value: any) => {
-    setWorks(works.map((route) => (route.id === id ? { ...route, [field]: value } : route)));
+  const handleUpdateRoute = (id: string, field: keyof RouteType, value: string | boolean) => {
+    setJobs(jobs.map((route) => (route.id === id ? { ...route, [field]: value } : route)));
   };
 
-  const handleSaveWorks = () => {
+  const handleSaveJobs = () => {
     // Here you would implement the actual save logic
     toast("Trabalho salvo com sucesso", {
-      description: `${works.length} trabalhos foram configuradas.`,
+      description: `${jobs.length} trabalhos foram configuradas.`,
     });
   };
 
@@ -192,7 +192,7 @@ export function RouteManager() {
             <Plus className="mr-2 h-4 w-4" />
             Nova Página
           </Button>
-          <Button onClick={handleSaveWorks}>
+          <Button onClick={handleSaveJobs}>
             <Save className="mr-2 h-4 w-4" />
             Salvar Alterações
           </Button>
@@ -200,16 +200,16 @@ export function RouteManager() {
       </div>
 
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={works} strategy={verticalListSortingStrategy}>
+        <SortableContext items={jobs} strategy={verticalListSortingStrategy}>
           <div className="space-y-2">
-            {works.map((route) => (
+            {jobs.map((route) => (
               <SortableItem
                 key={route.id}
                 id={route.id}
                 route={route}
                 handleUpdateRoute={handleUpdateRoute}
                 handleRemoveRoute={handleRemoveRoute}
-                worksLength={works.length}
+                jobsLength={jobs.length}
               />
             ))}
           </div>

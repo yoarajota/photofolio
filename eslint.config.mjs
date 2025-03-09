@@ -17,6 +17,7 @@ export default [
     },
     rules: {
       "react/react-in-jsx-scope": "off",
+      "no-undef": "off",
       "unused-imports/no-unused-imports": "error",
       "unused-imports/no-unused-vars": [
         "warn",

@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RouteManager } from "@/components/pages/protected/RouteManager";
+import { JobsManager } from "@/components/pages/protected/JobsManager";
 import { SalesOverview } from "@/components/pages/protected/SalesOverview";
 import { SettingsForm } from "@/components/pages/protected/SettingsForm";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -41,7 +41,7 @@ export default function DashboardTab({ tab }: { tab?: string }) {
     >
       <TabsList>
         <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-        <TabsTrigger value="works">Trabalhos</TabsTrigger>
+        <TabsTrigger value="jobs">Trabalhos</TabsTrigger>
         <TabsTrigger value="settings">Configurações</TabsTrigger>
       </TabsList>
       <TabsContent value="overview" className="space-y-4">
@@ -122,7 +122,7 @@ export default function DashboardTab({ tab }: { tab?: string }) {
           </Card>
         </div>
       </TabsContent>
-      <TabsContent value="works" className="space-y-4">
+      <TabsContent value="jobs" className="space-y-4">
         <Card>
           <CardHeader>
             <CardTitle>Gerenciamento de Trabalhos Feitos</CardTitle>
@@ -131,7 +131,7 @@ export default function DashboardTab({ tab }: { tab?: string }) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <RouteManager />
+            <JobsManager />
           </CardContent>
         </Card>
       </TabsContent>

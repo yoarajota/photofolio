@@ -136,14 +136,13 @@ export default function WatermarkEditor({ imageUrl, onSave, initialConfig }: Wat
     const textWidth = ctx.measureText(config.text).width
     const textHeight = fontSize
 
+    ctx.translate(width / 2, height / 2)
+    ctx.rotate((config.rotation * Math.PI) / 180)
+    ctx.translate(-width / 2, -height / 2)
+
     for (let y = config.positionY * scaleFactor; y < height; y += textHeight + config.spacingY * scaleFactor) {
       for (let x = config.positionX * scaleFactor; x < width; x += textWidth + config.spacingX * scaleFactor) {
-        ctx.save()
-        ctx.translate(x + textWidth / 2, y + textHeight / 2)
-        ctx.rotate((config.rotation * Math.PI) / 180)
-        ctx.translate(-(x + textWidth / 2), -(y + textHeight / 2))
         ctx.fillText(config.text, x, y + textHeight)
-        ctx.restore()
       }
     }
 
@@ -230,8 +229,8 @@ export default function WatermarkEditor({ imageUrl, onSave, initialConfig }: Wat
               </DialogHeader>
 
               <div className="flex flex-col md:flex-row gap-6 py-4">
-                <div>
-                  <div className="space-y-4 w-full md:w-2/5">
+                <div className="md:w-2/5 flex flex-col sm:flex-row gap-6">
+                  <div className="space-y-4 w-full">
                     <div className="grid gap-2">
                       <Label htmlFor="watermark-text">Texto da marca d&apos;água</Label>
                       <Input
@@ -303,7 +302,7 @@ export default function WatermarkEditor({ imageUrl, onSave, initialConfig }: Wat
                     </div>
                   </div>
 
-                  <div className="space-y-4 w-full md:w-3/5">
+                  <div className="space-y-4 w-full">
                     <div className="grid gap-2">
                       <div className="flex justify-between">
                         <Label htmlFor="watermark-spacing-x">Espaçamento X</Label>
@@ -311,7 +310,7 @@ export default function WatermarkEditor({ imageUrl, onSave, initialConfig }: Wat
                       </div>
                       <Slider
                         id="watermark-spacing-x"
-                        min={10}
+                        min={0}
                         max={500}
                         step={10}
                         value={[config.spacingX]}
@@ -326,7 +325,7 @@ export default function WatermarkEditor({ imageUrl, onSave, initialConfig }: Wat
                       </div>
                       <Slider
                         id="watermark-spacing-y"
-                        min={10}
+                        min={0}
                         max={500}
                         step={10}
                         value={[config.spacingY]}

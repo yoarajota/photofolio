@@ -11,16 +11,22 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { JobsManager } from "@/components/pages/protected/JobsManager";
-import { useSearchParams } from "next/navigation";
 import { ImageUploader } from "./ImageUploader";
+import { useSearchParams } from "next/navigation";
+import JobConfig from "./JobConfig";
 
-export default function JobsDashboard({ tab }: { tab?: string }) {
-  const [activeTab, setActiveTab] = useState<string>(tab ?? "overview");
+export default function JobsDashboard({
+  tab,
+}: {
+  tab?: string;
+}) {
+  const [activeTab, setActiveTab] = useState<string>(tab ?? "jobs");
+
   const searchParams = useSearchParams()
 
   useEffect(() => {
     if (searchParams.get("tab")) {
-      setActiveTab(searchParams.get("tab") ?? "overview")
+      setActiveTab(searchParams.get("tab") ?? "jobs")
     }
   }, [searchParams])
 
@@ -44,7 +50,7 @@ export default function JobsDashboard({ tab }: { tab?: string }) {
           </CardContent>
         </Card>
       </TabsContent>
-      <TabsContent value="jobs" className="space-y-4">
+      <TabsContent value="new" className="space-y-4">
         <Card>
           <CardHeader>
             <CardTitle>Gerenciamento de Trabalhos Feitos</CardTitle>
@@ -53,6 +59,10 @@ export default function JobsDashboard({ tab }: { tab?: string }) {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <JobConfig />
+
+            <div className="bg-border w-full h-[1px] my-6" />
+
             <ImageUploader />
           </CardContent>
         </Card>

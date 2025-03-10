@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 type RouteType = {
   id: string;
@@ -131,6 +132,8 @@ function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, jobsLen
 }
 
 export function JobsManager() {
+  const router = useRouter();
+
   const [jobs, setJobs] = useState<RouteType[]>([
     { id: "1", title: "Início", path: "/", type: "gallery", active: true, order: 0 },
   ]);
@@ -154,15 +157,7 @@ export function JobsManager() {
   };
 
   const handleAddRoute = () => {
-    const newRoute: RouteType = {
-      id: Math.random().toString(36).substring(2, 9),
-      title: "Nova Página",
-      path: `/nova-pagina-${jobs.length + 1}`,
-      type: "page",
-      active: true,
-      order: jobs.length,
-    };
-    setJobs([...jobs, newRoute]);
+    router.replace("/protected/jobs?tab=new");
   };
 
   const handleRemoveRoute = (id: string) => {
@@ -190,7 +185,7 @@ export function JobsManager() {
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleAddRoute}>
             <Plus className="mr-2 h-4 w-4" />
-            Nova Página
+            Novo Trabalho
           </Button>
           <Button onClick={handleSaveJobs}>
             <Save className="mr-2 h-4 w-4" />

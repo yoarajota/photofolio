@@ -2,211 +2,161 @@
 
 import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
-import { motion, useMotionValue, useTransform } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
+import { X } from "lucide-react"
 
-// Sample event photos - replace with actual photos
-const eventPhotos = [
+// Sample gallery items with only images
+const galleryItems = [
   {
     id: 1,
-    src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
-    alt: "Corporate event",
+    image: "/placeholder.svg?height=600&width=600",
   },
   {
     id: 2,
-    src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
-    alt: "Wedding celebration",
+    image: "/placeholder.svg?height=600&width=600",
   },
   {
     id: 3,
-    src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
-    alt: "Birthday party",
+    image: "/placeholder.svg?height=600&width=600",
   },
   {
     id: 4,
-    src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
-    alt: "Music festival",
+    image: "/placeholder.svg?height=600&width=600",
   },
   {
     id: 5,
-    src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
-    alt: "Fashion show",
+    image: "/placeholder.svg?height=600&width=600",
   },
   {
     id: 6,
-    src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
-    alt: "Product launch",
+    image: "/placeholder.svg?height=600&width=600",
   },
   {
     id: 7,
-    src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
-    alt: "Graduation ceremony",
+    image: "/placeholder.svg?height=600&width=600",
   },
   {
     id: 8,
-    src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
-    alt: "Sports event",
+    image: "/placeholder.svg?height=600&width=600",
   },
   {
     id: 9,
-    src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
-    alt: "Conference",
-  },
-  {
-    id: 10,
-    src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
-    alt: "Charity gala",
-  },
-  {
-    id: 11,
-    src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
-    alt: "Art exhibition",
-  },
-  {
-    id: 12,
-    src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
-    alt: "Food festival",
+    image: "/placeholder.svg?height=600&width=600",
   },
 ]
 
 export function PhotoGallery() {
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 })
+  const [selectedItem, setSelectedItem] = useState<number | null>(null)
+  const galleryRef = useRef<HTMLDivElement>(null)
 
+  // Lock body scroll when an item is selected
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setCursorPosition({ x: e.clientX, y: e.clientY })
+    if (selectedItem !== null) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
     }
 
-    window.addEventListener("mousemove", handleMouseMove)
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove)
+      document.body.style.overflow = ""
     }
-  }, [])
+  }, [selectedItem])
 
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {eventPhotos.map((photo) => (
-        <PhotoCard key={photo.id} photo={photo} cursorPosition={cursorPosition} />
-      ))}
-    </div>
-  )
-}
-
-interface PhotoCardProps {
-  photo: {
-    id: number
-    src: string
-    alt: string
+  // Handle item selection
+  const handleItemClick = (id: number) => {
+    setSelectedItem(id)
   }
-  cursorPosition: { x: number; y: number }
-}
 
-function PhotoCard({ photo, cursorPosition }: PhotoCardProps) {
-  const [isLoaded, setIsLoaded] = useState(false)
-  const [isInView, setIsInView] = useState(false)
-  const cardRef = useRef<HTMLDivElement>(null)
-  const [cardPosition, setCardPosition] = useState({ x: 0, y: 0, width: 0, height: 0 })
-
-  // Calculate distance between cursor and card center
-  const distanceFromCursor = useMotionValue(1000)
-
-  // Transform values based on cursor proximity
-  const scale = useTransform(distanceFromCursor, [0, 300], [1.05, 1])
-  const brightness = useTransform(distanceFromCursor, [0, 300], [1.2, 1])
-
-  // Update card position on resize
-  useEffect(() => {
-    if (!cardRef.current) return
-
-    const updateCardPosition = () => {
-      const rect = cardRef.current?.getBoundingClientRect()
-      if (rect) {
-        setCardPosition({
-          x: rect.left + rect.width / 2,
-          y: rect.top + rect.height / 2,
-          width: rect.width,
-          height: rect.height,
-        })
-      }
-    }
-
-    updateCardPosition()
-    window.addEventListener("resize", updateCardPosition)
-    window.addEventListener("scroll", updateCardPosition)
-
-    return () => {
-      window.removeEventListener("resize", updateCardPosition)
-      window.removeEventListener("scroll", updateCardPosition)
-    }
-  }, [isInView])
-
-  // Calculate distance from cursor to card center
-  useEffect(() => {
-    if (!isInView) return
-
-    const dx = cursorPosition.x - cardPosition.x
-    const dy = cursorPosition.y - cardPosition.y
-    const distance = Math.sqrt(dx * dx + dy * dy)
-
-    distanceFromCursor.set(distance)
-  }, [cursorPosition, cardPosition, isInView, distanceFromCursor])
-
-  // Intersection observer for lazy loading
-  useEffect(() => {
-    if (!cardRef.current) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true)
-          observer.disconnect()
-        }
-      },
-      {
-        rootMargin: "200px",
-      },
-    )
-
-    observer.observe(cardRef.current)
-
-    return () => {
-      observer.disconnect()
-    }
-  }, [])
-
-  // Calculate rotation based on cursor position relative to card center
-  const rotateXValue = useTransform(distanceFromCursor, [0, 300], [(cursorPosition.y - cardPosition.y) / 15, 0])
-  const rotateYValue = useTransform(distanceFromCursor, [0, 300], [-(cursorPosition.x - cardPosition.x) / 15, 0])
+  // Close the expanded view
+  const handleClose = () => {
+    setSelectedItem(null)
+  }
 
   return (
-    <motion.div
-      ref={cardRef}
-      style={{
-        scale: isInView ? scale : 1,
-        filter: `brightness(${isInView ? brightness.get() : 1})`,
-        rotateX: isInView ? rotateXValue : 0,
-        rotateY: isInView ? rotateYValue : 0,
-        transformPerspective: 1000,
-      }}
-      whileHover={{ z: 10 }}
-      className="relative aspect-[4/3] overflow-hidden rounded-lg"
-    >
-      {isInView && (
-        <>
-          <div
-            className={`absolute inset-0 bg-slate-200 ${isLoaded ? "opacity-0" : "opacity-100"} transition-opacity duration-300 z-10`}
-          />
-          <Image
-            src={photo.src || "/placeholder.svg"}
-            alt={photo.alt}
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-all duration-300"
-            onLoadingComplete={() => setIsLoaded(true)}
-            loading="lazy"
-          />
-        </>
-      )}
-    </motion.div>
+    <div className="relative">
+      {/* Gallery Grid - Always 3 columns */}
+      <div ref={galleryRef} className="grid grid-cols-3 gap-4">
+        {galleryItems.map((item) => (
+          <motion.div
+            key={item.id}
+            data-item-id={item.id}
+            layoutId={`item-container-${item.id}`}
+            className={`rounded-xl overflow-hidden bg-white shadow-md cursor-pointer
+                      transition-shadow hover:shadow-lg ${selectedItem === item.id ? "invisible" : "visible"}`}
+            onClick={() => handleItemClick(item.id)}
+            whileHover={{
+              scale: 1.03,
+              transition: { duration: 0.2, ease: "easeOut" },
+            }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <motion.div layoutId={`item-image-${item.id}`} className="relative aspect-square w-full">
+              <Image
+                src={item.image || "/placeholder.svg"}
+                alt={`Gallery item ${item.id}`}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 33vw, 33vw"
+              />
+            </motion.div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Expanded Item View */}
+      <AnimatePresence>
+        {selectedItem !== null && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 bg-black/60 z-40"
+              onClick={handleClose}
+            />
+
+            {/* Expanded Item */}
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+              <motion.div
+                layoutId={`item-container-${selectedItem}`}
+                className="bg-white rounded-2xl overflow-hidden shadow-2xl w-full max-w-lg pointer-events-auto"
+                transition={{
+                  type: "spring",
+                  damping: 30,
+                  stiffness: 300,
+                }}
+              >
+                {/* Close Button */}
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="absolute top-4 right-4 z-10 bg-black/30 backdrop-blur-md rounded-full p-2 text-white"
+                  onClick={handleClose}
+                >
+                  <X size={20} />
+                </motion.button>
+
+                {/* Image Only */}
+                <motion.div layoutId={`item-image-${selectedItem}`} className="relative aspect-square w-full">
+                  <Image
+                    src={galleryItems.find((item) => item.id === selectedItem)?.image || ""}
+                    alt={`Gallery item ${selectedItem}`}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 100vw, 640px"
+                    priority
+                  />
+                </motion.div>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
 

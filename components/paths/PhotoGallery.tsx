@@ -9,39 +9,39 @@ import { X } from "lucide-react"
 const galleryItems = [
   {
     id: 1,
-    image: "/placeholder.svg?height=600&width=600",
+    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 2,
-    image: "/placeholder.svg?height=600&width=600",
+    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 3,
-    image: "/placeholder.svg?height=600&width=600",
+    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 4,
-    image: "/placeholder.svg?height=600&width=600",
+    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 5,
-    image: "/placeholder.svg?height=600&width=600",
+    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 6,
-    image: "/placeholder.svg?height=600&width=600",
+    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 7,
-    image: "/placeholder.svg?height=600&width=600",
+    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 8,
-    image: "/placeholder.svg?height=600&width=600",
+    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 9,
-    image: "/placeholder.svg?height=600&width=600",
+    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
 ]
 
@@ -73,16 +73,14 @@ export function PhotoGallery() {
   }
 
   return (
-    <div className="relative">
-      {/* Gallery Grid - Always 3 columns */}
+    <div className="mx-auto w-4/5 md:w-3/5">
       <div ref={galleryRef} className="grid grid-cols-3 gap-4">
         {galleryItems.map((item) => (
           <motion.div
             key={item.id}
             data-item-id={item.id}
             layoutId={`item-container-${item.id}`}
-            className={`rounded-xl overflow-hidden bg-white shadow-md cursor-pointer
-                      transition-shadow hover:shadow-lg ${selectedItem === item.id ? "invisible" : "visible"}`}
+            className={`rounded-xl overflow-hidden cursor-pointer  ${selectedItem === item.id ? "invisible" : "visible"}`}
             onClick={() => handleItemClick(item.id)}
             whileHover={{
               scale: 1.03,
@@ -103,7 +101,6 @@ export function PhotoGallery() {
         ))}
       </div>
 
-      {/* Expanded Item View */}
       <AnimatePresence>
         {selectedItem !== null && (
           <>
@@ -113,7 +110,7 @@ export function PhotoGallery() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 bg-black/60 z-40"
+              className="fixed inset-0 z-40"
               onClick={handleClose}
             />
 
@@ -121,7 +118,7 @@ export function PhotoGallery() {
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
               <motion.div
                 layoutId={`item-container-${selectedItem}`}
-                className="bg-white rounded-2xl overflow-hidden shadow-2xl w-full max-w-lg pointer-events-auto"
+                className="relative rounded-2xl overflow-hidden w-full max-w-lg pointer-events-auto"
                 transition={{
                   type: "spring",
                   damping: 30,
@@ -134,7 +131,7 @@ export function PhotoGallery() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="absolute top-4 right-4 z-10 bg-black/30 backdrop-blur-md rounded-full p-2 text-white"
+                  className="absolute top-4 right-4 z-10 bg-black/30 rounded-full p-2 text-white"
                   onClick={handleClose}
                 >
                   <X size={20} />

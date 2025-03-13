@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { PhotoGallery } from "@/components/paths/PhotoGallery"
 import PhotosHighlight from "@/components/paths/PhotosHighlight"
+import CursorEffect from "@/components/paths/CursorEffect"
 
 export const metadata: Metadata = {
   title: "Event Photography Gallery",
@@ -9,13 +10,9 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="min-h-screen bg-background relative">
-      <h1 className="text-3xl font-bold tracking-tight mb-4 text-center">Event Photography</h1>
-      <p className="text-muted-foreground text-center mb-8 max-w-2xl mx-auto">
-        A collection of moments captured during various events. Move your cursor over the images to interact with
-        them.
-      </p>
-
+    <main className="min-h-screen bg-background relative scroll-smooth overflow-y-scroll cursor-none">
+      <CursorEffect />
+      <PhotosHighlight />
       <br />
       <PhotoGallery />
     </main>

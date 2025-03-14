@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
-import CursorEffect from "@/components/paths/CursorEffect"
-import HalftoneWavesBackground from "@/components/paths/HalftoneWavesBackground"
-import PhotosCarousel from "@/components/paths/PhotosCarousel"
+import CursorEffect from "@/app/[...path]/_components/CursorEffect"
+import HalftoneWavesBackground from "@/app/[...path]/_components/HalftoneWavesBackground"
+import PhotosCarousel from "@/app/[...path]/_components/PhotosCarousel"
 
 export const metadata: Metadata = {
   title: "Event Photography Gallery",

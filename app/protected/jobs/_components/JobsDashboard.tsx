@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { JobsManager } from "@/components/pages/protected/JobsManager";
+import { JobsManager } from "@/app/protected/_components/JobsManager";
 import { ImageUploader } from "./ImageUploader";
 import { useSearchParams } from "next/navigation";
 import JobConfig from "./JobConfig";

@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import GridImages from "@/components/pages/landing-page/GridImages";
-import AnimatedCityModel from "@/components/pages/landing-page/AnimatedCityModel";
+import GridImages from "@/app/_components/GridImages";
+import AnimatedCityModel from "@/app/_components/AnimatedCityModel";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,8 +29,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import LPFooter from "@/components/pages/landing-page/LPFooter";
-import LPHeader from "@/components/pages/landing-page/LPHeader";
+import LPFooter from "@/app/_components/LPFooter";
+import LPHeader from "@/app/_components/LPHeader";
 
 export default function Web() {
   const heroRef = useRef(null);

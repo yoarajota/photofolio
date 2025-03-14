@@ -11,9 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { JobsManager } from "@/components/pages/protected/JobsManager";
-import { SalesOverview } from "@/components/pages/protected/SalesOverview";
-import { SettingsForm } from "@/components/pages/protected/SettingsForm";
+import { JobsManager } from "@/app/protected/_components/JobsManager";
+import { SalesOverview } from "@/app/protected/_components/SalesOverview";
+import { SettingsForm } from "@/app/protected/_components/SettingsForm";
 import { useSearchParams, useRouter } from "next/navigation";
 
 export default function DashboardTab({ tab }: { tab?: string }) {

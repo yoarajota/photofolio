@@ -1,4 +1,4 @@
-import DashboardTab from "@/components/pages/protected/DashboardTab"
+import DashboardTab from "@/app/protected/_components/DashboardTab"
   
 export default async function Web(props: { searchParams: Promise<{
   tab?: string

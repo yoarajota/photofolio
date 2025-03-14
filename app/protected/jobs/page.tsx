@@ -1,6 +1,6 @@
 
 
-import JobsDashboard from "@/components/pages/protected/jobs/JobsDashboard";
+import JobsDashboard from "@/app/protected/jobs/_components/JobsDashboard";
 
 export default async function Web(props: { searchParams: Promise<{
   tab?: string

@@ -1,9 +1,9 @@
 "use client"
 
-import { useRef, useMemo, useEffect } from "react"
+import { useRef, useMemo, useEffect, useState } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import * as THREE from "three"
-import { useSpring } from "framer-motion"
+import { useScroll, useSpring } from "framer-motion"
 
 // Custom shader material for the wave animation
 function WaveShaderMaterial({ waveIntensity = 1, waveSpeed = 1 }) {
@@ -186,19 +186,46 @@ function ParticleWaves({ count = 5000, size = 40, mousePosition, scrollProgress 
   )
 }
 
-export default function HalftoneWavesBackground({ mousePosition, scrollProgress }) {
+export default function HalftoneWavesBackground() {
+  const containerRef = useRef(null)
+  const [mousePosition, setMousePosition] = useState({ x: null, y: null })
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"],
+  })
+  
   // Create a spring animation for the scroll progress
-  const springScrollProgress = useSpring(scrollProgress || 0, {
+  const springScrollProgress = useSpring(scrollYProgress || 0, {
     stiffness: 100,
     damping: 30,
   })
 
+  const handleMouseMove = (event) => {
+    // Normalize mouse position between -1 and 1
+    const x = (event.clientX / window.innerWidth) * 2 - 1
+    const y = -(event.clientY / window.innerHeight) * 2 + 1
+    setMousePosition({ x, y })
+  }
+
   return (
-    <Canvas camera={{ position: [0, 15, 0], fov: 50, near: 0.1, far: 1000 }} dpr={[1, 2]}>
-      <color attach="background" args={["#050505"]} />
-      <fog attach="fog" args={["#050505", 15, 30]} />
-      <ParticleWaves mousePosition={mousePosition} scrollProgress={springScrollProgress} count={4000} />
-    </Canvas>
+    <div
+      ref={containerRef}
+      className="relative w-screen h-screen"
+      onMouseMove={handleMouseMove}
+      onTouchMove={(e) => {
+        const touch = e.touches[0]
+        handleMouseMove({
+          clientX: touch.clientX,
+          clientY: touch.clientY,
+        })
+      }}
+    >
+      <Canvas camera={{ position: [0, 15, 0], fov: 50, near: 0.1, far: 1000 }} dpr={[1, 2]}>
+        <color attach="background" args={["#050505"]} />
+        <fog attach="fog" args={["#050505", 15, 30]} />
+        <ParticleWaves mousePosition={mousePosition} scrollProgress={springScrollProgress} count={4000} />
+      </Canvas>
+    </div>
   )
 }
 

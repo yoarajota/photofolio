@@ -3,7 +3,6 @@
 import { useRef, useState } from "react"
 import Image from "next/image"
 import { motion, useScroll, useTransform, useSpring, useInView } from "framer-motion"
-import HalftoneWavesBackground from "./HalftoneWavesBackground"
 
 const highlightImages = [
   {
@@ -27,38 +26,8 @@ const highlightImages = [
 ]
 
 export default function PhotosHighlight() {
-  const [mousePosition, setMousePosition] = useState({ x: null, y: null })
-  const containerRef = useRef(null)
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  })
-
-  const handleMouseMove = (event) => {
-    // Normalize mouse position between -1 and 1
-    const x = (event.clientX / window.innerWidth) * 2 - 1
-    const y = -(event.clientY / window.innerHeight) * 2 + 1
-    setMousePosition({ x, y })
-  }
 
   return (
-    <div
-      ref={containerRef}
-      className="relative w-full"
-      onMouseMove={handleMouseMove}
-      onTouchMove={(e) => {
-        const touch = e.touches[0]
-        handleMouseMove({
-          clientX: touch.clientX,
-          clientY: touch.clientY,
-        })
-      }}
-    >
-      {/* Fixed background that stays while scrolling */}
-      <div className="fixed inset-0 z-0">
-        <HalftoneWavesBackground mousePosition={mousePosition} scrollProgress={scrollYProgress} />
-      </div>
-
       {/* Intro section */}
       <div className="h-screen w-full flex items-center justify-center relative z-10">
         <motion.div
@@ -115,7 +84,6 @@ export default function PhotosHighlight() {
           </p>
         </motion.div>
       </div>
-    </div>
   )
 }
 
@@ -128,8 +96,7 @@ interface HighlightImageProps {
   }
 }
 
-function HighlightImage({ image }: HighlightImageProps) {
-  const containerRef = useRef(null)
+function HighlightImage({ image, containerRef }: HighlightImageProps) {
   const imageRef = useRef(null)
   const isInView = useInView(containerRef, { once: false, amount: 0.3 })
 
@@ -165,9 +132,9 @@ function HighlightImage({ image }: HighlightImageProps) {
             duration: 1,
             ease: [0.22, 1, 0.36, 1],
           }}
-          className="w-full max-w-md relative"
+          className="w-full max-w-md 2xl:max-w-2xl relative"
         >
-          <div className="aspect-[2/3] relative rounded-2xl overflow-hidden">
+          <div className="aspect-[2/3] 2xl:aspect-[3/2] relative rounded-2xl overflow-hidden">
             {/* Glow effect */}
             <div className="absolute inset-0 z-20 mix-blend-overlay bg-gradient-to-tr from-purple-500/30 via-transparent to-cyan-500/30" />
 
@@ -200,16 +167,6 @@ function HighlightImage({ image }: HighlightImageProps) {
               </svg>
             </div>
           </div>
-
-          {/* Caption */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="mt-4 text-white/80"
-          >
-            <h3 className="text-xl font-medium">{image.alt}</h3>
-          </motion.div>
         </motion.div>
       </div>
     </div>

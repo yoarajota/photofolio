@@ -1,18 +1,41 @@
 "use client"
 
-import { useRef, useEffect } from "react"
-import { motion } from "framer-motion"
+import { useRef, useEffect, useState } from "react"
+import { motion, useAnimation } from "framer-motion"
+
+const transition = {
+  duration: 0.4,
+  ease: [0, 0.71, 0.2, 1.01],
+}
 
 export default function CursorEffect() {
-  const cursorRef = useRef<HTMLDivElement>(null)
+  const cursorRef = useRef(null)
+  const controls = useAnimation()
+  const [hasMoved, setHasMoved] = useState(false)
 
   useEffect(() => {
     const cursor = cursorRef.current
     if (!cursor) return
 
-    const onMouseMove = (e: MouseEvent) => {
-      cursor.style.left = `${e.clientX - 15}px`
-      cursor.style.top = `${e.clientY - 10}px`
+    const onMouseMove = (e) => {
+      if (!hasMoved) {
+        controls.set({
+          left: e.clientX - 15,
+          top: e.clientY - 10,
+        })
+        controls.start({
+          opacity: 1,
+          scale: 1,
+          transition,
+        })
+        setHasMoved(true)
+      } else {
+        controls.start({
+          left: e.clientX - 15,
+          top: e.clientY - 10,
+          transition: { duration: 0 }
+        })
+      }
     }
 
     window.addEventListener("mousemove", onMouseMove)
@@ -20,20 +43,19 @@ export default function CursorEffect() {
     return () => {
       window.removeEventListener("mousemove", onMouseMove)
     }
-  }, [])
+  }, [controls, hasMoved])
 
   return (
     <motion.div
       ref={cursorRef}
-      className="fixed w-8 h-8 rounded-full pointer-events-none z-50 mix-blend-difference"
-      initial={{ opacity: 0, scale: 0.5 }}
-      animate={{ opacity: 1, scale: 1 }}
+      className="w-8 h-8 rounded-full pointer-events-none z-50 mix-blend-difference cursor-none"
+      initial={{ opacity: 0, scale: 0.5, left: 0, top: 0 }}
+      animate={controls}
       style={{
         background: "rgba(255, 255, 255, 0.5)",
         backdropFilter: "blur(4px)",
-        transform: "translate(-50%, -50%)",
+        position: "absolute",
       }}
     />
   )
 }
-

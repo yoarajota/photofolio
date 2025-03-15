@@ -11,11 +11,11 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="min-h-screen bg-background relative scroll-smooth cursor-none">
-      <CursorEffect />
-      {/* <PhotosCarousel /> */}
+    <main className="min-h-screen bg-background relative scroll-smooth">
+      {/* <CursorEffect /> */}
+      <PhotosCarousel />
       {/* <FramerMotionWrapper /> */}
-      <HalftoneWavesBackground />
+      {/* <HalftoneWavesBackground /> */}
     </main>
   )
 }

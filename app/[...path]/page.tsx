@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="min-h-screen bg-background relative scroll-smooth overflow-y-auto cursor-none">
+    <main className="min-h-screen bg-background relative scroll-smooth cursor-none">
       <CursorEffect />
       {/* <PhotosCarousel /> */}
       {/* <FramerMotionWrapper /> */}

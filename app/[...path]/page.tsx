@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import CursorEffect from "@/app/[...path]/_components/CursorEffect"
 import HalftoneWavesBackground from "@/app/[...path]/_components/HalftoneWavesBackground"
 import PhotosCarousel from "@/app/[...path]/_components/PhotosCarousel"
-import FramerMotionWrapper from "./_components/FramerMotionWrapper_unused_not_ok"
+import { PhotoGallery } from "./_components/PhotoGallery"
 
 export const metadata: Metadata = {
   title: "Event Photography Gallery",
@@ -11,12 +11,15 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="min-h-screen bg-background relative scroll-smooth">
-      {/* <CursorEffect /> */}
-      <PhotosCarousel />
-      {/* <FramerMotionWrapper /> */}
-      {/* <HalftoneWavesBackground /> */}
-    </main>
+    <HalftoneWavesBackground>
+      <>
+        <CursorEffect />
+        
+        <PhotosCarousel>
+          <PhotoGallery />
+        </PhotosCarousel>
+      </>
+    </HalftoneWavesBackground>
   )
 }
 

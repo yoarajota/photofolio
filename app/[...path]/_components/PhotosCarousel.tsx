@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useMemo } from "react"
 import { motion, AnimatePresence, useAnimate } from "framer-motion" // Updated import
 import Image from "next/image"
 import { Dot, MoveRight } from "lucide-react"
@@ -30,59 +30,99 @@ const images: CarouselImage[] = [
   { id: 7, src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80", alt: "Image 7" },
 ]
 
-export default function CarouselWithSelector() {
+export default function CarouselWithSelector({ children }: { children?: React.ReactNode }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const wrappper = useRef<HTMLDivElement>(null)
   const [miniaturesWrapper, animateMiniaturesWrapper] = useAnimate()
   const [scrollPosition, setScrollPosition] = useState(-24)
-  const direction = 1
 
-const handleWheel = async (event: React.WheelEvent) => {
-  const miniaturesContainer = miniaturesWrapper.current
-  const wrapperContainer = wrappper.current
-
-  if (!miniaturesContainer || !wrapperContainer) {
-    return
-  }
-
-  const scrollAmount = event.deltaY * 0.5
-  
-  const maxScroll = -(miniaturesContainer.scrollHeight - previewSize / 2)
-  const minScroll = -previewSize / 2
-
-  let newPosition
-
-  const sum = scrollPosition + scrollAmount
-
-  if (Math.abs(sum) > Math.abs(maxScroll)) {
-    newPosition = maxScroll
-  } else if (Math.abs(minScroll) > Math.abs(sum)) {
-    newPosition = minScroll
-  } else {
-    newPosition = sum
-  }
-
-  if (newPosition === scrollPosition || newPosition > 0) { 
-    return
-  }
-
-  setScrollPosition(newPosition)
-
-  await animateMiniaturesWrapper(
-    miniaturesContainer,
-    { y: newPosition },
-    { 
-      type: "spring",
-      stiffness: 300,
-      damping: 30,
-      mass: 1
+  const getMaxScroll = () => {
+    if (!miniaturesWrapper.current) {
+      return 0
     }
-  )
-}
+
+    return -(miniaturesWrapper.current.scrollHeight - previewSize / 2)
+  }
+
+  const imagesMap = useMemo(() => {
+    // should store the position of the most hight part of the item and the most low part of the item
+    const imagesMap = new Map<number, { top: number, bottom: number }>()
+    let top = -previewSize
+    let bottom = 0
+
+    images.forEach((_, index) => {
+      imagesMap.set(index, { top, bottom })
+
+      top -= previewSize
+      bottom -= previewSize
+    })
+
+    return imagesMap
+  }, [images])
+
+  const handleWheel = async (event: React.WheelEvent) => {
+    const miniaturesContainer = miniaturesWrapper.current
+    const wrapperContainer = wrappper.current
+
+    if (!miniaturesContainer || !wrapperContainer) {
+      return
+    }
+
+    const scrollAmount = event.deltaY * 0.3
+    
+    const minScroll = -previewSize / 2
+    const maxScroll = getMaxScroll()
+
+    console.log(minScroll, maxScroll)
+
+    let newPosition
+
+    const sum = scrollPosition + scrollAmount
+
+    if (Math.abs(sum) > Math.abs(maxScroll)) {
+      newPosition = maxScroll
+    } else if (Math.abs(minScroll) > Math.abs(sum)) {
+      newPosition = minScroll
+    } else {
+      newPosition = sum
+    }
+
+    if (newPosition === scrollPosition || newPosition > 0) { 
+      return
+    }
+
+    setScrollPosition(newPosition)
+    
+    // with the map, set the selected image
+    // iterate the map
+    // if the current image is in the range of the current scroll position
+    // set the current image as the active image
+    // and break the loop
+    let activeIndex = 0
+    console.log(imagesMap, newPosition)
+    imagesMap.forEach((position, index) => {
+      if (newPosition >= position.top && newPosition <= position.bottom) {
+        activeIndex = index
+      }
+    })
+
+    setActiveIndex(activeIndex)
+
+    await animateMiniaturesWrapper(
+      miniaturesContainer,
+      { y: newPosition },
+      { 
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        mass: 1
+      }
+    )
+  }
 
   return (
     <div
-      className="h-screen w-screen flex items-center justify-center overflow-hidden"
+      className={`h-screen w-screen ${activeIndex === images.length-1 ? 'overflow-y-scroll' : 'overflow-hidden'}`}
       onWheel={handleWheel}
     >
       <div 
@@ -108,7 +148,7 @@ const handleWheel = async (event: React.WheelEvent) => {
               {images.map((_, index) => (
                 <motion.div
                   key={index}
-                  className={`w-12 h-12 rounded-xl border-2 cursor-pointer`}
+                  className={`w-12 h-12 border-2 cursor-pointer border-collapse ${index ? '-mt-[1px]' : ''}`}
                   initial={{ opacity: index === activeIndex ? 1 : 0.3 }}
                   animate={{
                     opacity: index === activeIndex ? 1 : 0.6,
@@ -135,10 +175,6 @@ const handleWheel = async (event: React.WheelEvent) => {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeIndex}
-                  initial={{ opacity: 0, x: direction * 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -direction * 20 }}
-                  transition={{ duration: 0.3 }}
                   className="w-full h-full absolute"
                 >
                   <Image
@@ -155,6 +191,8 @@ const handleWheel = async (event: React.WheelEvent) => {
           </div>
         </div>
       </div>
+
+      {children}
     </div>
   )
 }

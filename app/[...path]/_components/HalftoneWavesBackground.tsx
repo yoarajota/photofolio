@@ -186,7 +186,7 @@ function ParticleWaves({ count = 5000, size = 40, mousePosition, scrollProgress 
   )
 }
 
-export default function HalftoneWavesBackground({ children }: { children: React.ReactNode }) {
+export default function HalftoneWavesBackground() {
   const containerRef = useRef(null)
   const [mousePosition, setMousePosition] = useState({ x: null, y: null })
   const { scrollYProgress } = useScroll({
@@ -210,7 +210,7 @@ export default function HalftoneWavesBackground({ children }: { children: React.
   return (
     <main
       ref={containerRef}
-      className="min-h-screen scroll-smooth"
+      className="fixed min-h-screen scroll-smooth"
       onMouseMove={handleMouseMove}
       onTouchMove={(e) => {
         const touch = e.touches[0]
@@ -220,8 +220,6 @@ export default function HalftoneWavesBackground({ children }: { children: React.
         })
       }}
     >
-      {children}
-
       <Canvas camera={{ position: [0, 15, 0], fov: 50, near: 0.1, far: 1000 }} dpr={[1, 2]}>
         <color attach="background" args={["#050505"]} />
         <fog attach="fog" args={["#050505", 15, 30]} />

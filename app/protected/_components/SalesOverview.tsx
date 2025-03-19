@@ -61,17 +61,6 @@ export function SalesOverview({ showDetails = false }: SalesProps) {
     },
   ]
 
-  // Sample chart data
-  const chartData = {
-    labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
-    datasets: [
-      {
-        label: "Vendas",
-        data: [1200, 1900, 1500, 2200, 1800, 2400],
-      },
-    ],
-  }
-
   return (
     <div className="space-y-4">
       {!showDetails ? (

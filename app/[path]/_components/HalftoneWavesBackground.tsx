@@ -1,12 +1,13 @@
+/* eslint-disable react/no-unknown-property */
 "use client"
 
 import { useRef, useMemo, useEffect, useState } from "react"
 import { Canvas, useFrame } from "@react-three/fiber"
 import * as THREE from "three"
-import { useScroll, useSpring } from "framer-motion"
+import { MotionValue, useScroll, useSpring } from "motion/react"
 
 // Custom shader material for the wave animation
-function WaveShaderMaterial({ waveIntensity = 1, waveSpeed = 1 }) {
+function WaveShaderMaterial({ waveIntensity = 1, waveSpeed = 1 }: { waveIntensity: number, waveSpeed: number }) {
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
@@ -75,8 +76,15 @@ function WaveShaderMaterial({ waveIntensity = 1, waveSpeed = 1 }) {
   )
 }
 
-function ParticleWaves({ count = 5000, size = 40, mousePosition, scrollProgress }) {
-  const meshRef = useRef()
+function ParticleWaves({ count = 5000, size = 40, mousePosition, scrollProgress }: {
+  count: number
+  size?: number
+  mousePosition: { x: number; y: number }
+  scrollProgress: MotionValue<number>
+}) {
+  const meshRef = useRef<THREE.Points & {
+    material: THREE.ShaderMaterial
+  }>(null)
   const prevTimeRef = useRef(0)
   const targetIntensityRef = useRef(1)
   const targetSpeedRef = useRef(1)
@@ -119,7 +127,7 @@ function ParticleWaves({ count = 5000, size = 40, mousePosition, scrollProgress 
   }, [count, size])
 
   // Smooth lerp function for transitions
-  const lerp = (start, end, factor) => {
+  const lerp = (start: number, end: number, factor: number) => {
     return start + (end - start) * factor
   }
 
@@ -134,6 +142,7 @@ function ParticleWaves({ count = 5000, size = 40, mousePosition, scrollProgress 
     }
 
     const unsubscribe = scrollProgress.on("change", updateScrollProgress)
+
     return () => unsubscribe()
   }, [scrollProgress])
 
@@ -178,8 +187,8 @@ function ParticleWaves({ count = 5000, size = 40, mousePosition, scrollProgress 
   return (
     <points ref={meshRef}>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={positions.length / 3} array={positions} itemSize={3} />
-        <bufferAttribute attach="attributes-color" count={colors.length / 3} array={colors} itemSize={3} />
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} count={positions.length / 3} array={positions} itemSize={3} />
+        <bufferAttribute attach="attributes-color" args={[colors, 3]} count={colors.length / 3} array={colors} itemSize={3} />
       </bufferGeometry>
       <WaveShaderMaterial waveIntensity={1} waveSpeed={0.8} />
     </points>
@@ -188,7 +197,7 @@ function ParticleWaves({ count = 5000, size = 40, mousePosition, scrollProgress 
 
 export default function HalftoneWavesBackground() {
   const containerRef = useRef(null)
-  const [mousePosition, setMousePosition] = useState({ x: null, y: null })
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"],
@@ -200,7 +209,10 @@ export default function HalftoneWavesBackground() {
     damping: 30,
   })
 
-  const handleMouseMove = (event) => {
+  const handleMouseMove = (event: MouseEvent | {
+    clientX: number
+    clientY: number
+  }) => {
     // Normalize mouse position between -1 and 1
     const x = (event.clientX / window.innerWidth) * 2 - 1
     const y = -(event.clientY / window.innerHeight) * 2 + 1
@@ -208,12 +220,13 @@ export default function HalftoneWavesBackground() {
   }
 
   return (
-    <main
+    <div
       ref={containerRef}
-      className="fixed min-h-screen scroll-smooth"
+      className="fixed top-0 left-0 w-full h-full z-0"
       onMouseMove={handleMouseMove}
       onTouchMove={(e) => {
         const touch = e.touches[0]
+
         handleMouseMove({
           clientX: touch.clientX,
           clientY: touch.clientY,
@@ -225,7 +238,7 @@ export default function HalftoneWavesBackground() {
         <fog attach="fog" args={["#050505", 15, 30]} />
         <ParticleWaves mousePosition={mousePosition} scrollProgress={springScrollProgress} count={4000} />
       </Canvas>
-    </main>
+    </div>
   )
 }
 

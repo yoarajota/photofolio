@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
-import { motion, AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "motion/react"
 import { X } from "lucide-react"
 
 // Sample gallery items with only images
@@ -73,7 +73,7 @@ export function PhotoGallery() {
   }
 
   return (
-    <div className="mx-auto w-4/5 md:w-3/5">
+    <div className="mx-auto w-4/5 md:w-3/5 relative z-10">
       <div ref={galleryRef} className="grid grid-cols-3 gap-4">
         {galleryItems.map((item) => (
           <motion.div
@@ -118,7 +118,7 @@ export function PhotoGallery() {
             <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
               <motion.div
                 layoutId={`item-container-${selectedItem}`}
-                className="relative rounded-2xl overflow-hidden w-full max-w-lg pointer-events-auto"
+                className="relative rounded-2xl overflow-hidden w-full max-w-lg pointer-events-auto z-30"
                 transition={{
                   type: "spring",
                   damping: 30,

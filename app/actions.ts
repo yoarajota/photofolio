@@ -60,7 +60,7 @@ export const sendOTPCode = async (formData: FormData) => {
   const email = formData.get("email") as string;
   const supabase = await createClient();
 
-  const { data, error } = await supabase.auth.signInWithOtp({
+  const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
       shouldCreateUser: false,
@@ -171,8 +171,6 @@ export const resetPasswordAction = async (formData: FormData) => {
 export const signOutAction = async () => {
   const supabase = await createClient();
   await supabase.auth.signOut();
-
-  console.log("Signed out");
 
   return redirect("/sign-in");
 };

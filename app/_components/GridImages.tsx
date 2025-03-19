@@ -46,7 +46,10 @@ const images = [
   },
 ];
 
-const Item = ({ src, index }) => {
+const Item = ({ src, index }: {
+  src: string;
+  index: number;
+}) => {
   const ref = useRef(null);
 
   const inView = useInView(ref, {
@@ -75,11 +78,13 @@ const Item = ({ src, index }) => {
   );
 };
 
-export default function GridImages({ sectionRef }) {
+export default function GridImages({ sectionRef }: {
+  sectionRef: React.RefObject<HTMLDivElement>;
+}) {
   const { scrollY } = useScroll();
   const y = useSpring(50);
   const gridRef = useRef(null);
-  const [items, setItems] = useState(images);
+  const [items] = useState(images);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const startSpaceToScroll = sectionRef.current?.clientHeight * 0.2;

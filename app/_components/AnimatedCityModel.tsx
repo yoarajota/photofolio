@@ -1,15 +1,21 @@
+/* eslint-disable react/no-unknown-property */
 import { useEffect, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { useMotionValueEvent, useScroll, useSpring } from "motion/react";
+import { GLTFResult } from "@/types/three";
 
 function Model() {
-  const group = useRef(null);
+  const group = useRef<THREE.Group>(null);
 
-  const { nodes, materials } = useGLTF("/scene-draco.glb");
+  const { nodes, materials }: GLTFResult = useGLTF("/scene-draco.glb");
 
-  useFrame(() => (group.current.rotation.y += 0.003));
+  useFrame(() => {
+    if (group.current) {
+      group.current.rotation.y += 0.003;
+    }
+  });
 
   return (
     <group ref={group} scale={0.001} position={[0, -4, -60]} dispose={null}>
@@ -42,7 +48,9 @@ function Model() {
   );
 }
 
-export default function AnimatedCityModel({ sectionRef }) {
+export default function AnimatedCityModel({ sectionRef }: {
+  sectionRef: React.RefObject<HTMLDivElement>;
+}) {
   const { scrollY } = useScroll();
 
   const minFov = 80;

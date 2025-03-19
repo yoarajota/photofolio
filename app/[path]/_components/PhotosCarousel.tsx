@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useMemo } from "react"
-import { motion, AnimatePresence, useAnimate } from "framer-motion" // Updated import
+import { motion, AnimatePresence, useAnimate } from "motion/react" // Updated import
 import Image from "next/image"
 import { Dot, MoveRight } from "lucide-react"
 

@@ -1,49 +1,49 @@
-"use client"
+"use client";
 
-import { useRef, useEffect, useState } from "react"
-import { motion, useAnimation } from "motion/react"
+import { useRef, useEffect, useState } from "react";
+import { motion, useAnimation } from "motion/react";
 
 const transition = {
   duration: 0.4,
   ease: [0, 0.71, 0.2, 1.01],
-}
+};
 
 export default function CursorEffect() {
-  const cursorRef = useRef(null)
-  const controls = useAnimation()
-  const [hasMoved, setHasMoved] = useState(false)
+  const cursorRef = useRef(null);
+  const controls = useAnimation();
+  const [hasMoved, setHasMoved] = useState(false);
 
   useEffect(() => {
-    const cursor = cursorRef.current
-    if (!cursor) return
+    const cursor = cursorRef.current;
+    if (!cursor) return;
 
-    const onMouseMove = (e) => {
+    const onMouseMove = (e: MouseEvent) => {
       if (!hasMoved) {
         controls.set({
           left: e.clientX - 15,
           top: e.clientY - 10,
-        })
+        });
         controls.start({
           opacity: 1,
           scale: 1,
           transition,
-        })
-        setHasMoved(true)
+        });
+        setHasMoved(true);
       } else {
         controls.start({
           left: e.clientX - 15,
           top: e.clientY - 10,
-          transition: { duration: 0 }
-        })
+          transition: { duration: 0 },
+        });
       }
-    }
+    };
 
-    window.addEventListener("mousemove", onMouseMove)
+    window.addEventListener("mousemove", onMouseMove);
 
     return () => {
-      window.removeEventListener("mousemove", onMouseMove)
-    }
-  }, [controls, hasMoved])
+      window.removeEventListener("mousemove", onMouseMove);
+    };
+  }, [controls, hasMoved]);
 
   return (
     <motion.div
@@ -57,5 +57,5 @@ export default function CursorEffect() {
         position: "absolute",
       }}
     />
-  )
+  );
 }

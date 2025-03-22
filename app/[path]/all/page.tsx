@@ -1,18 +1,21 @@
-import type { Metadata } from "next"
-import HalftoneWavesBackground from "@/app/[path]/_components/HalftoneWavesBackground"
-import { PhotoGallery } from "../_components/PhotoGallery"
+import type { Metadata } from "next";
+import CursorEffect from "@/app/[path]/_components/CursorEffect";
+import HalftoneWavesBackground from "@/app/[path]/_components/HalftoneWavesBackground";
+import PhotoGallery from "@/app/[path]/_components/PhotoGallery";
 
 export const metadata: Metadata = {
   title: "Event Photography Gallery",
-  description: "Freelance event photography portfolio with interactive elements",
-}
+  description:
+    "Freelance event photography portfolio with interactive elements",
+};
 
 export default function Page() {
   return (
-      <main className="min-h-screen bg-background relative scroll-smooth">
+    <main className="relative min-h-screen">
+      <CursorEffect />
+      <HalftoneWavesBackground>
         <PhotoGallery />
-        <HalftoneWavesBackground />
-      </main>
-  )
+      </HalftoneWavesBackground>
+    </main>
+  );
 }
-

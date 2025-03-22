@@ -300,7 +300,7 @@ export default function HalftoneWavesBackground({
       {children}
 
       <Canvas
-        camera={{ position: [0, 15, 0], fov: 40, near: 0.08, far: 100 }}
+        camera={{ position: [0, 15, 0], fov: 20, near: 0.08, far: 1000 }}
         dpr={[1, 2]}
       >
         <color attach="background" args={["#050505"]} />
@@ -309,7 +309,7 @@ export default function HalftoneWavesBackground({
           mousePosition={mousePosition}
           scrollProgress={springScrollProgress}
           count={4000}
-          size={20}
+          size={10}
         />
       </Canvas>
     </div>

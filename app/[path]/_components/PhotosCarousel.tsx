@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import { motion, AnimatePresence, useAnimate } from "motion/react"; // Updated import
 import Image from "next/image";
 import { Dot, MoveRight } from "lucide-react";
@@ -9,6 +9,7 @@ const previewSize = 48;
 interface CarouselImage {
   id: number;
   src: string;
+  miniature: string;  
   alt: string;
 }
 
@@ -16,76 +17,91 @@ const images: CarouselImage[] = [
   {
     id: 1,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 1",
   },
   {
     id: 2,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 2",
   },
   {
     id: 3,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 3",
   },
   {
     id: 4,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 4",
   },
   {
     id: 5,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 5",
   },
   {
     id: 6,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 6",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
+    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
 ];
@@ -184,9 +200,51 @@ export default function CarouselWithSelector({
     );
   };
 
+  const handleClickMiniature = useCallback(
+    async (index: number) => {
+      const miniaturesContainer = miniaturesWrapper.current;
+
+      if (index === activeIndex) {
+        return;
+      }
+
+      if (index === 0) {
+        setScrollPosition(-previewSize / 2);
+      } else {
+        const position = imagesMap.get(index);
+
+        if (position) {
+          console.log(position, "position", position.top + -previewSize / 2);
+          miniaturesWrapper.current?.scrollTo({
+            top: position.top + -previewSize / 2,
+            behavior: "smooth",
+          });
+
+          const newPosition = position.top + previewSize / 2;
+
+          setScrollPosition(newPosition);
+
+          await animateMiniaturesWrapper(
+            miniaturesContainer,
+            { y: newPosition },
+            {
+              type: "spring",
+              stiffness: 300,
+              damping: 30,
+              mass: 1,
+            }
+          );
+        }
+      }
+
+      setActiveIndex(index);
+    },
+    [activeIndex, imagesMap, previewSize, miniaturesWrapper]
+  );
+
   return (
     <div
-      className={`h-screen w-screen ${activeIndex === images.length - 1 ? "overflow-y-scroll" : "overflow-hidden"}`}
+      className={`absolute flex items-center z-10 h-screen w-screen ${activeIndex === images.length - 1 ? "overflow-y-scroll" : "overflow-hidden"}`}
       onWheel={handleWheel}
     >
       <div ref={wrappper} className="w-full max-w-4xl mx-auto">
@@ -206,10 +264,10 @@ export default function CarouselWithSelector({
               ref={miniaturesWrapper}
               className={`flex flex-col absolute top-1/2 -translate-y-6 -left-8`}
             >
-              {images.map((_, index) => (
+              {images.map((image, index) => (
                 <motion.div
                   key={index}
-                  className={`w-12 h-12 border-2 cursor-pointer border-collapse ${index ? "-mt-[1px]" : ""}`}
+                  className="w-12 h-12 cursor-pointer overflow-hidden"
                   initial={{ opacity: index === activeIndex ? 1 : 0.3 }}
                   animate={{
                     opacity: index === activeIndex ? 1 : 0.6,
@@ -221,8 +279,17 @@ export default function CarouselWithSelector({
                     opacity: { duration: 0.3 },
                     scale: { type: "spring", stiffness: 400, damping: 17 },
                   }}
-                  onClick={() => setActiveIndex(index)}
-                />
+                  onClick={() => handleClickMiniature(index)}
+                >
+                  <Image
+                    src={image.miniature}
+                    alt={image.alt}
+                    className="object-cover"
+                    priority={activeIndex === 0}
+                    width={48}
+                    height={48}
+                  />
+                </motion.div>
               ))}
             </motion.div>
           </div>

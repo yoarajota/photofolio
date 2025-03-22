@@ -45,7 +45,7 @@ const galleryItems = [
   },
 ]
 
-export function PhotoGallery() {
+export default function PhotoGallery() {
   const [selectedItem, setSelectedItem] = useState<number | null>(null)
   const galleryRef = useRef<HTMLDivElement>(null)
 

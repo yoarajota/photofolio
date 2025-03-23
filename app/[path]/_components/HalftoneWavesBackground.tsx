@@ -61,7 +61,7 @@ function WaveShaderMaterial({
           newPosition.y = wave1 + wave2;
           
           gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
-          gl_PointSize = 3.0 * (1.0 - distance / 40.0);
+          gl_PointSize = 6.0 * (1.0 - distance / 40.0); // Aumentando o tamanho das partículas
         }
       `}
       fragmentShader={`

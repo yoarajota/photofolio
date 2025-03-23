@@ -153,8 +153,6 @@ export default function CarouselWithSelector({
     const minScroll = -previewSize / 2;
     const maxScroll = getMaxScroll();
 
-    console.log(minScroll, maxScroll);
-
     let newPosition;
 
     const sum = scrollPosition + scrollAmount;
@@ -179,7 +177,6 @@ export default function CarouselWithSelector({
     // set the current image as the active image
     // and break the loop
     let activeIndex = 0;
-    console.log(imagesMap, newPosition);
     imagesMap.forEach((position, index) => {
       if (newPosition >= position.top && newPosition <= position.bottom) {
         activeIndex = index;
@@ -214,7 +211,6 @@ export default function CarouselWithSelector({
         const position = imagesMap.get(index);
 
         if (position) {
-          console.log(position, "position", position.top + -previewSize / 2);
           miniaturesWrapper.current?.scrollTo({
             top: position.top + -previewSize / 2,
             behavior: "smooth",

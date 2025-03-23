@@ -92,8 +92,6 @@ export default function JobConfig() {
   })
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-
     toast("Configuração salva", {
       description: "As configurações do trabalho foram salvas com sucesso.",
     })

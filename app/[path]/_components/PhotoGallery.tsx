@@ -73,7 +73,7 @@ export default function PhotoGallery() {
   }
 
   return (
-    <div className="mx-auto w-4/5 md:w-3/5 relative z-10">
+    <div className="absolute left-1/2 -translate-x-1/2 w-4/5 md:w-3/5 z-10">
       <div ref={galleryRef} className="grid grid-cols-3 gap-4">
         {galleryItems.map((item) => (
           <motion.div
@@ -88,12 +88,15 @@ export default function PhotoGallery() {
             }}
             whileTap={{ scale: 0.98 }}
           >
-            <motion.div layoutId={`item-image-${item.id}`} className="relative aspect-square w-full">
+            <motion.div
+              layoutId={`item-image-${item.id}`}
+              className="relative aspect-square w-full"
+            >
               <Image
                 src={item.image || "/placeholder.svg"}
                 alt={`Gallery item ${item.id}`}
                 fill
-                className="object-cover"
+                className="object-cover cursor-pointer"
                 sizes="(max-width: 768px) 33vw, 33vw"
               />
             </motion.div>
@@ -138,9 +141,15 @@ export default function PhotoGallery() {
                 </motion.button>
 
                 {/* Image Only */}
-                <motion.div layoutId={`item-image-${selectedItem}`} className="relative aspect-square w-full">
+                <motion.div
+                  layoutId={`item-image-${selectedItem}`}
+                  className="relative aspect-square w-full"
+                >
                   <Image
-                    src={galleryItems.find((item) => item.id === selectedItem)?.image || ""}
+                    src={
+                      galleryItems.find((item) => item.id === selectedItem)
+                        ?.image || ""
+                    }
                     alt={`Gallery item ${selectedItem}`}
                     fill
                     className="object-cover"
@@ -154,6 +163,6 @@ export default function PhotoGallery() {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 

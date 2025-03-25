@@ -18,7 +18,7 @@ export default async function Page(props: { params: Promise<{ path: string }> })
   } = await props.params;
 
   return (
-    <main className="relative min-h-screen cursor-none">
+    <main className="relative min-h-screen has-cursor-effect">
       <CursorEffect />
 
       <HalftoneWavesBackground>

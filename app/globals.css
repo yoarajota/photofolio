@@ -78,3 +78,9 @@
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+
+.has-cursor-effect,
+.has-cursor-effect *
+{
+  cursor: none !important;
+}

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <main className="relative min-h-screen">
+    <main className="relative min-h-screen has-cursor-effect">
       <CursorEffect />
       <HalftoneWavesBackground>
         <PhotoGallery />

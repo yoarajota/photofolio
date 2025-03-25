@@ -38,10 +38,41 @@ export default function CursorEffect() {
       }
     };
 
+    const isPressable = (element: HTMLElement) => {
+      return (
+        element.style.cursor === "pointer" ||
+        element.classList.contains("cursor-pointer") ||
+        element.tagName === "A" ||
+        element.tagName === "BUTTON"
+      );
+    }
+
+    const onMouseOver = (e: MouseEvent) => {
+      if (isPressable(e.target as HTMLElement)) {
+        controls.start({
+          opacity: 0.5,
+          transition,
+        });
+      }
+    };
+
+    const onMouseOut = (e: MouseEvent) => {
+      if (isPressable(e.target as HTMLElement)) {
+        controls.start({
+          opacity: 1,
+          transition,
+        });
+      }
+    };
+
     window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseover", onMouseOver);
+    window.addEventListener("mouseout", onMouseOut);
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseover", onMouseOver);
+      window.removeEventListener("mouseout", onMouseOut);
     };
   }, [controls, hasMoved]);
 

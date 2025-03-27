@@ -205,6 +205,8 @@ export default function CarouselWithSelector({
         return;
       }
 
+      setActiveIndex(index);
+
       if (index === 0) {
         setScrollPosition(-previewSize / 2);
       } else {
@@ -232,8 +234,6 @@ export default function CarouselWithSelector({
           );
         }
       }
-
-      setActiveIndex(index);
     },
     [activeIndex, imagesMap, previewSize, miniaturesWrapper]
   );
@@ -280,7 +280,7 @@ export default function CarouselWithSelector({
                   <Image
                     src={image.miniature}
                     alt={image.alt}
-                    className="object-cover"
+                    className="object-cover cursor-pointer"
                     priority={activeIndex === 0}
                     width={48}
                     height={48}

@@ -1,31 +1,22 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { motion, useAnimation } from "motion/react";
+import { useRef, useEffect, useState, useCallback } from "react";
+import { motion, useSpring } from "motion/react";
 
-const transition = {
-  duration: 0.4,
-  ease: [0, 0.71, 0.2, 1.01],
-};
-
-
-// #FF0066;
-// #BB004B;
-
-const SVGFull = () => {
+const SVGFull = ({ color }: { color: string}) => {
   return (
     <g
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
         d="M87.5 -21.8C101.4 14.4 92.4 64.6 64.8 83.3C37.3 101.9 -8.9 88.9 -46.6 62C-84.3 35.1 -113.5 -5.6 -104.3 -35.3C-95.1 -64.9 -47.6 -83.5 -5.4 -81.7C36.8 -79.9 73.5 -57.9 87.5 -21.8"
-        fill="#BB004B"
+        fill={color}
       />
     </g>
   );
 }
 
-const SVGOutlined = () => {
+const SVGOutlined = ({ color }: { color: string}) => {
   return (
     <g
       xmlns="http://www.w3.org/2000/svg"
@@ -33,7 +24,7 @@ const SVGOutlined = () => {
       <path
         d="M87.5 -21.8C101.4 14.4 92.4 64.6 64.8 83.3C37.3 101.9 -8.9 88.9 -46.6 62C-84.3 35.1 -113.5 -5.6 -104.3 -35.3C-95.1 -64.9 -47.6 -83.5 -5.4 -81.7C36.8 -79.9 73.5 -57.9 87.5 -21.8"
         fill="none"
-        stroke="#BB004B"
+        stroke={color}
         strokeWidth="6"
       />
     </g>
@@ -42,84 +33,94 @@ const SVGOutlined = () => {
 
 export default function CursorEffect() {
   const cursorRef = useRef(null);
-  const controls = useAnimation();
   const [hasMoved, setHasMoved] = useState(false);
-  const [isHovering, setIsHovering] = useState(false); // New state for hover
+  const [isHovering, setIsHovering] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const scale = useSpring(0, { stiffness: 300, damping: 20 });
+
+  const isPressable = useCallback((element: HTMLElement) => {
+    return (
+      element.style.cursor === "pointer" ||
+      element.classList.contains("cursor-pointer") ||
+      element.tagName === "A" ||
+      element.tagName === "BUTTON"
+    );
+  }, []);
 
   useEffect(() => {
-    const cursor = cursorRef.current;
-    if (!cursor) return;
-
     const onMouseMove = (e: MouseEvent) => {
-      if (!hasMoved) {
-        controls.set({
-          left: e.clientX - 15,
-          top: e.clientY - 10,
-        });
+      setPosition({ x: e.clientX - 15, y: e.clientY - 10 });
 
-        controls.start({
-          scale: 1,
-          transition,
-        });
+      if (!hasMoved) {
+        scale.set(1);
         setHasMoved(true);
-      } else {
-        controls.start({
-          left: e.clientX - 15,
-          top: e.clientY - 10,
-          transition: { duration: 0 },
-        });
       }
     };
 
-    const isPressable = (element: HTMLElement) => {
-      return (
-        element.style.cursor === "pointer" ||
-        element.classList.contains("cursor-pointer") ||
-        element.tagName === "A" ||
-        element.tagName === "BUTTON"
-      );
+    const onScroll = (e: WheelEvent) => {
+      if (hasMoved) {
+        setPosition((prev) => ({
+          x: prev.x,
+          y: prev.y,
+        }));
+      }
     };
 
     const onMouseOver = (e: MouseEvent) => {
       if (isPressable(e.target as HTMLElement)) {
-        setIsHovering(true); 
+        setIsHovering(true);
+        scale.set(1.2);
       }
     };
 
     const onMouseOut = (e: MouseEvent) => {
       if (isPressable(e.target as HTMLElement)) {
         setIsHovering(false);
+        scale.set(1);
       }
     };
 
+    const onOutOfDocument = () => {
+      scale.set(0);
+      setHasMoved(false);
+    };
+
     window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("scroll", onScroll);
     window.addEventListener("mouseover", onMouseOver);
     window.addEventListener("mouseout", onMouseOut);
+    document.addEventListener("mouseleave", onOutOfDocument);
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("mouseover", onMouseOver);
       window.removeEventListener("mouseout", onMouseOut);
+      document.removeEventListener("mouseleave", onOutOfDocument);
     };
-  }, [controls, hasMoved]);
+  }, [scale, hasMoved, isPressable]);
 
   return (
     <motion.div
       ref={cursorRef}
-      className="w-8 h-8 rounded-full pointer-events-none z-50 mix-blend-difference cursor-none"
-      initial={{ left: 0, top: 0 }}
-      animate={controls}
+      className="w-8 h-8 absolute rounded-full pointer-events-none z-50 mix-blend-difference cursor-none"
       style={{
-        position: "absolute",
+        left: position.x,
+        top: position.y,
+        scale,
       }}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         width="100%"
         height="100%"
-        viewBox="0 0 24 24"
+        viewBox="-120 -120 240 240"
       >
-        {isHovering ? <SVGOutlined /> : <SVGFull />}
+        {isHovering ? (
+          <SVGOutlined color={"#BB004B"} />
+        ) : (
+          <SVGFull color={"#BB004B"} />
+        )}
       </svg>
     </motion.div>
   );

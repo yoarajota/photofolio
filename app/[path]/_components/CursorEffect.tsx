@@ -57,15 +57,6 @@ export default function CursorEffect() {
       }
     };
 
-    const onScroll = (e: WheelEvent) => {
-      if (hasMoved) {
-        setPosition((prev) => ({
-          x: prev.x,
-          y: prev.y,
-        }));
-      }
-    };
-
     const onMouseOver = (e: MouseEvent) => {
       if (isPressable(e.target as HTMLElement)) {
         setIsHovering(true);
@@ -86,14 +77,12 @@ export default function CursorEffect() {
     };
 
     window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("scroll", onScroll);
     window.addEventListener("mouseover", onMouseOver);
     window.addEventListener("mouseout", onMouseOut);
     document.addEventListener("mouseleave", onOutOfDocument);
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("mouseover", onMouseOver);
       window.removeEventListener("mouseout", onMouseOut);
       document.removeEventListener("mouseleave", onOutOfDocument);
@@ -103,7 +92,7 @@ export default function CursorEffect() {
   return (
     <motion.div
       ref={cursorRef}
-      className="w-8 h-8 absolute rounded-full pointer-events-none z-50 mix-blend-difference cursor-none"
+      className="w-8 h-8 fixed rounded-full pointer-events-none z-50 mix-blend-difference cursor-none"
       style={{
         left: position.x,
         top: position.y,

@@ -112,8 +112,8 @@ export default function PhotoGallery() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40"
+              transition={{ duration: 0.2, delay: 1.2 }}
+              className="absolute inset-0 z-40 w-screen h-screen left-0"
               onClick={handleClose}
             />
 
@@ -137,7 +137,7 @@ export default function PhotoGallery() {
                   className="absolute top-4 right-4 z-10 bg-black/30 rounded-full p-2 text-white"
                   onClick={handleClose}
                 >
-                  <X size={20} />
+                  <X size={20} className="pointer-events-none" />
                 </motion.button>
 
                 {/* Image Only */}

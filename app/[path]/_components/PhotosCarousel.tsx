@@ -207,40 +207,42 @@ export default function CarouselWithSelector({
 
       setActiveIndex(index);
 
-      if (index === 0) {
-        setScrollPosition(-previewSize / 2);
-      } else {
-        const position = imagesMap.get(index);
+      let newPosition = -previewSize / 2;
+      let toScrollTo = newPosition
 
-        if (position) {
-          miniaturesWrapper.current?.scrollTo({
-            top: position.top + -previewSize / 2,
-            behavior: "smooth",
-          });
+      if (index !== 0) {
+        const position = imagesMap.get(index) as {
+          top: number;
+        };
 
-          const newPosition = position.top + previewSize / 2;
-
-          setScrollPosition(newPosition);
-
-          await animateMiniaturesWrapper(
-            miniaturesContainer,
-            { y: newPosition },
-            {
-              type: "spring",
-              stiffness: 300,
-              damping: 30,
-              mass: 1,
-            }
-          );
-        }
+        newPosition = position.top + previewSize / 2;
+        toScrollTo = position.top + -previewSize / 2
       }
+
+      miniaturesWrapper.current?.scrollTo({
+        top: toScrollTo,
+        behavior: "smooth",
+      });
+
+      setScrollPosition(newPosition);
+
+      await animateMiniaturesWrapper(
+        miniaturesContainer,
+        { y: newPosition },
+        {
+          type: "spring",
+          stiffness: 300,
+          damping: 30,
+          mass: 1,
+        }
+      );
     },
     [activeIndex, imagesMap, previewSize, miniaturesWrapper]
   );
 
   return (
     <div
-      className={`absolute flex items-center z-10 h-screen w-screen ${activeIndex === images.length - 1 ? "overflow-y-scroll" : "overflow-hidden"}`}
+      className={"absolute flex items-center z-10 h-screen w-screen overflow-y-hidden"}
       onWheel={handleWheel}
     >
       <div ref={wrappper} className="w-full max-w-4xl mx-auto">

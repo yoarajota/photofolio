@@ -286,7 +286,7 @@ export default function HalftoneWavesBackground({
   return (
     <div
       ref={containerRef}
-      className="w-screen h-screen"
+      className="w-screen h-screen relative"
       onMouseMove={handleMouseMove}
       onTouchMove={(e) => {
         const touch = e.touches[0];

@@ -9,7 +9,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  exclude: ["supabase/"],
 };
 
 export default nextConfig;

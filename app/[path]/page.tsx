@@ -3,7 +3,6 @@ import CursorEffect from "@/app/[path]/_components/CursorEffect";
 import HalftoneWavesBackground from "@/app/[path]/_components/HalftoneWavesBackground";
 import PhotosCarousel from "@/app/[path]/_components/PhotosCarousel";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/router";
 import Link from "next/link";
 
 export const metadata: Metadata = {

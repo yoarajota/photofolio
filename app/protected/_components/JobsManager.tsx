@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { getAllJobs } from "../actions";
 
 type RouteType = {
   id: string;
@@ -133,10 +134,18 @@ function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, jobsLen
 
 export function JobsManager() {
   const router = useRouter();
+  const [jobs, setJobs] = useState<RouteType[]>([]);
 
-  const [jobs, setJobs] = useState<RouteType[]>([
-    { id: "1", title: "Início", path: "/", type: "gallery", active: true, order: 0 },
-  ]);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      const jobsData = await getAllJobs();
+
+      setJobs(jobsData);
+    };
+
+    fetchJobs();
+  }, [])
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;

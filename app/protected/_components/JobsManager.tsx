@@ -21,19 +21,10 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { getAllJobs } from "../actions";
 
-type RouteType = {
-  id: string;
-  title: string;
-  path: string;
-  type: "gallery" | "page" | "contact" | "about";
-  active: boolean;
-  order: number;
-};
-
 function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, jobsLength }: {
   id: string;
-  route: RouteType;
-  handleUpdateRoute: (id: string, field: keyof RouteType, value: string | boolean) => void;
+  route: Job;
+  handleUpdateRoute: (id: string, field: keyof Job, value: string | boolean) => void;
   handleRemoveRoute: (id: string) => void;
   jobsLength: number;
 }) {
@@ -132,20 +123,8 @@ function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, jobsLen
   );
 }
 
-export function JobsManager() {
+export function JobsManager({ jobs }: { jobs: Job[] }) {
   const router = useRouter();
-  const [jobs, setJobs] = useState<RouteType[]>([]);
-
-
-  useEffect(() => {
-    const fetchJobs = async () => {
-      const jobsData = await getAllJobs();
-
-      setJobs(jobsData);
-    };
-
-    fetchJobs();
-  }, [])
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;

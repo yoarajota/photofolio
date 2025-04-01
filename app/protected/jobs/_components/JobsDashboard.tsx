@@ -14,6 +14,7 @@ import { JobsManager } from "@/app/protected/_components/JobsManager";
 import { ImageUploader } from "./ImageUploader";
 import { useSearchParams } from "next/navigation";
 import JobConfig from "./JobConfig";
+import { getAllJobs } from "../../actions";
 
 export default function JobsDashboard({
   tab,
@@ -21,6 +22,7 @@ export default function JobsDashboard({
   tab?: string;
 }) {
   const [activeTab, setActiveTab] = useState<string>(tab ?? "jobs");
+  const [jobs, setJobs] = useState<Job[]>([]);
 
   const searchParams = useSearchParams()
 
@@ -29,6 +31,16 @@ export default function JobsDashboard({
       setActiveTab(searchParams.get("tab") ?? "jobs")
     }
   }, [searchParams])
+  
+  useEffect(() => {
+    const fetchJobs = async () => {
+      const jobsData = await getAllJobs();
+
+      setJobs(jobsData);
+    };
+
+    fetchJobs();
+  }, [])
 
   return (
     <Tabs
@@ -46,7 +58,7 @@ export default function JobsDashboard({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <JobsManager />
+            <JobsManager jobs={jobs} />
           </CardContent>
         </Card>
       </TabsContent>
@@ -59,7 +71,7 @@ export default function JobsDashboard({
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <JobConfig />
+            <JobConfig setActiveTab={setActiveTab} />
 
             <div className="bg-border w-full h-[1px] my-6" />
 

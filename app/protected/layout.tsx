@@ -7,7 +7,7 @@ import { usePathname, useSearchParams } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { signOutAction } from "@/app/actions";
 
 export default function RootLayout({
@@ -54,10 +54,12 @@ export default function RootLayout({
           </SheetTrigger>
           <SheetContent side="left" className="w-72">
             <div className="flex flex-col gap-4">
-              <div className="flex items-center gap-2 py-4">
+            <SheetTitle>
+              <div className="flex items-center gap-2">
                 <ImageIcon className="h-6 w-6" />
-                <span className="text-lg font-semibold">Portfólio Admin</span>
+                <span className="text-lg font-semibold hidden sm:flex">Portfólio Admin</span>
               </div>
+            </SheetTitle>
               <nav className="flex flex-col gap-2">
                 {routes.map((route) => (
                   <Link

@@ -15,9 +15,11 @@ import { JobsManager } from "@/app/protected/_components/JobsManager";
 import { SalesOverview } from "@/app/protected/_components/SalesOverview";
 import { SettingsForm } from "@/app/protected/_components/SettingsForm";
 import { useSearchParams, useRouter } from "next/navigation";
+import { getAllJobs } from "../actions";
 
 export default function DashboardTab({ tab }: { tab?: string }) {
   const [activeTab, setActiveTab] = useState<string>(tab ?? "overview");
+  const [jobs, setJobs] = useState<Job[]>([]);
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -31,6 +33,16 @@ export default function DashboardTab({ tab }: { tab?: string }) {
     setActiveTab(tab)
     router.push("/protected")
   }, [setActiveTab]);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      const jobsData = await getAllJobs();
+
+      setJobs(jobsData);
+    };
+
+    fetchJobs();
+  }, [])
 
   return (
     <Tabs
@@ -131,7 +143,7 @@ export default function DashboardTab({ tab }: { tab?: string }) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <JobsManager />
+            <JobsManager jobs={jobs} />
           </CardContent>
         </Card>
       </TabsContent>

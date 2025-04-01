@@ -1,11 +1,9 @@
 "use server";
 
-import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 
-export const a = async (formData: FormData) => {
+export const saveJob = async (job: Job) => {
   const supabase = await createClient();
 
-  return redirect("/protected");
+  return await supabase.from("jobs").insert(job).select("*")
 };

@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner";
 import { ChangeEvent } from "react"
+import { saveJob } from "../actions"
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   title: z.string().min(3, {
@@ -17,7 +19,7 @@ const formSchema = z.object({
   seo_description: z.string().max(160, {
     message: "A descrição SEO deve ter no máximo 160 caracteres.",
   }),
-  seo_keywords: z.string().optional(),
+  seo_keywords: z.string(),
   slug: z
     .string()
     .min(3, {
@@ -46,10 +48,15 @@ const formFields = [
       generateSlug: (title: string) => void
     ) => (e: ChangeEvent<HTMLInputElement> & ChangeEvent<HTMLTextAreaElement>) => {
 
+      const oldSlug = generateSlug(form.getValues("title")) ?? ""
+
       field.onChange(e)
 
-      if (form.getValues("slug") === "") {
-        generateSlug(e.target.value)
+      const newSlug = generateSlug(e.target.value) ?? ""
+      const currentSlug: string | null = form.getValues("slug") ?? null
+
+      if (currentSlug === oldSlug || !currentSlug) {
+        form.setValue("slug", newSlug)
       }
     },
     wrapperClassName: "col-span-full",
@@ -80,7 +87,9 @@ const formFields = [
   },
 ]
 
-export default function JobConfig() {
+export default function JobConfig({ setActiveTab }: { setActiveTab: (tab: string) => void }) {
+  const router = useRouter()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -91,22 +100,38 @@ export default function JobConfig() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    toast("Configuração salva", {
-      description: "As configurações do trabalho foram salvas com sucesso.",
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { error } = await saveJob({
+      title: values.title,
+      seo_description: values.seo_description,
+      seo_keywords: values.seo_keywords,
+      slug: values.slug,
     })
+
+    if (!error) {
+      toast("Configuração salva", {
+        description: "As configurações do trabalho foram salvas com sucesso.",
+      });
+
+      router.replace("/protected/jobs");
+      setActiveTab("jobs");
+    } else {
+      toast.error("Erro ao salvar configuração", {
+        description: "Ocorreu um erro ao salvar as configurações do trabalho.",
+      });
+
+      console.log(error);
+    }
   }
 
-  function generateSlug(title: string) {
-    const slug = title
+  function generateSlug(title: string): string {
+    return title
       .toLowerCase()
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^\w\s-]/g, "")
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-")
-
-    form.setValue("slug", slug)
   }
 
   return (

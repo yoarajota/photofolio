@@ -1,5 +1,5 @@
--- Create the posts table with UUID primary key
-CREATE TABLE posts (
+-- Create the jobs table with UUID primary key
+CREATE TABLE jobs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title VARCHAR(255) NOT NULL,
     seo_description VARCHAR(160) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE posts (
 );
 
 -- Create an index on the slug for faster lookups
-CREATE INDEX idx_posts_slug ON posts (slug);
+CREATE INDEX idx_jobs_slug ON jobs (slug);
 
 -- Create a trigger to update the updated_at timestamp on row updates
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -29,14 +29,14 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER update_posts_updated_at
-BEFORE UPDATE ON posts
+CREATE TRIGGER update_jobs_updated_at
+BEFORE UPDATE ON jobs
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
 -- 
 
 -- enable row level security
-ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE jobs ENABLE ROW LEVEL SECURITY;
 
-create policy "ALL PERMISSIONS FOR AUTHENTICATED ON public.posts" on "public"."posts" as PERMISSIVE for ALL to authenticated using ( true ) with check ( true );
+create policy "ALL PERMISSIONS FOR AUTHENTICATED ON public.jobs" on "public"."jobs" as PERMISSIVE for ALL to authenticated using ( true ) with check ( true );

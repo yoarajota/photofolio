@@ -222,7 +222,7 @@ export default function WatermarkEditor({ imageUrl, onSave, initialConfig }: Wat
             Configurar Marca d&apos;água
           </Button>
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogContent className="max-w-[90vw] h-[80%] max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-[90vw] h-[80%] max-h-[90vh] overflow-y-auto">              
               <DialogHeader>
                 <DialogTitle>Configurar Marca d&apos;água</DialogTitle>
                 <DialogDescription>Ajuste as configurações da marca d&apos;água para sua imagem.</DialogDescription>

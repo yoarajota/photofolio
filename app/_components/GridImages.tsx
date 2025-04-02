@@ -79,7 +79,7 @@ const Item = ({ src, index }: {
 };
 
 export default function GridImages({ sectionRef }: {
-  sectionRef: React.RefObject<HTMLDivElement>;
+  sectionRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const { scrollY } = useScroll();
   const y = useSpring(50);
@@ -87,8 +87,8 @@ export default function GridImages({ sectionRef }: {
   const [items] = useState(images);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
-    const startSpaceToScroll = sectionRef.current?.clientHeight * 0.2;
-    const endSpaceToScroll = sectionRef.current?.clientHeight * 0.4;
+    const startSpaceToScroll = (sectionRef.current?.clientHeight ?? 0) * 0.2;
+    const endSpaceToScroll = (sectionRef.current?.clientHeight ?? 0) * 0.4;
 
     if (latest > startSpaceToScroll && latest < endSpaceToScroll) {
       const scrollRatio =

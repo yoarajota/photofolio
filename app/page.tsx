@@ -33,7 +33,7 @@ import LPFooter from "@/app/_components/LPFooter";
 import LPHeader from "@/app/_components/LPHeader";
 
 export default function Web() {
-  const heroRef = useRef(null);
+  const heroRef = useRef<HTMLDivElement>(null);
 
   const categories = [
     { id: "retratos", label: "Retratos" },

@@ -1,8 +1,13 @@
 "use client";
 
-import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
+import { 
+  DndContext, 
+  UniqueIdentifier, 
+  closestCenter, 
+  // type DragEndEvent 
+} from "@dnd-kit/core";
 import {
-  arrayMove,
+  // arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
@@ -19,8 +24,12 @@ import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, jobsLength }: {
-  id: string;
+function SortableItem({ 
+  // id, 
+  route, 
+  // handleUpdateRoute, handleRemoveRoute, 
+  jobsLength }: {
+  id?: string;
   route: Job;
   handleUpdateRoute: (id: string, field: keyof Job, value: string | boolean) => void;
   handleRemoveRoute: (id: string) => void;
@@ -32,7 +41,7 @@ function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, jobsLen
     setNodeRef,
     transform,
     transition,
-  } = useSortable({ id });
+  } = useSortable({ id: new Date().getTime() });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -55,7 +64,7 @@ function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, jobsLen
               <Input
                 id={`title-${route.id}`}
                 value={route.title}
-                onChange={(e) => handleUpdateRoute(route.id, "title", e.target.value)}
+                // onChange={(e) => handleUpdateRoute(route.id, "title", e.target.value)}
               />
             </div>
 
@@ -65,8 +74,8 @@ function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, jobsLen
               </Label>
               <Input
                 id={`path-${route.id}`}
-                value={route.path}
-                onChange={(e) => handleUpdateRoute(route.id, "path", e.target.value)}
+                // value={route.path}
+                // onChange={(e) => handleUpdateRoute(route.id, "path", e.target.value)}
               />
             </div>
 
@@ -75,8 +84,8 @@ function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, jobsLen
                 Tipo
               </Label>
               <Select
-                value={route.type}
-                onValueChange={(value) => handleUpdateRoute(route.id, "type", value)}
+                // value={route.type}
+                // onValueChange={(value) => handleUpdateRoute(route.id, "type", value)}
               >
                 <SelectTrigger id={`type-${route.id}`}>
                   <SelectValue placeholder="Selecione o tipo" />
@@ -93,22 +102,26 @@ function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, jobsLen
             <div className="flex items-center space-x-2">
               <Switch
                 id={`active-${route.id}`}
-                checked={route.active}
-                onCheckedChange={(checked) => handleUpdateRoute(route.id, "active", checked)}
+                // checked={route.active}
+                // onCheckedChange={(checked) => handleUpdateRoute(route.id, "active", checked)}
               />
               <Label htmlFor={`active-${route.id}`}>Ativo</Label>
             </div>
 
             <div className="flex justify-end gap-2">
               <Button variant="outline" size="icon" asChild>
-                <a href={route.path} target="_blank" rel="noopener noreferrer">
+                <a 
+                  // href={route.path} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
                   <Eye className="h-4 w-4" />
                 </a>
               </Button>
               <Button
                 variant="destructive"
                 size="icon"
-                onClick={() => handleRemoveRoute(route.id)}
+                // onClick={() => handleRemoveRoute(route.id)}
                 disabled={jobsLength <= 1}
               >
                 <Trash2 className="h-4 w-4" />
@@ -124,34 +137,37 @@ function SortableItem({ id, route, handleUpdateRoute, handleRemoveRoute, jobsLen
 export function JobsManager({ jobs }: { jobs: Job[] }) {
   const router = useRouter();
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
+  const handleDragEnd = () => {
+    // const handleDragEnd = (event: DragEndEvent) => {
+    // const { active, over } = event;
 
-    if (active.id !== over?.id) {
-      setJobs((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over?.id);
+    // if (active.id !== over?.id) {
+    //   setJobs((items) => {
+    //     const oldIndex = items.findIndex((item) => item.id === active.id);
+    //     const newIndex = items.findIndex((item) => item.id === over?.id);
 
-        const updatedItems = arrayMove(items, oldIndex, newIndex).map((item, index) => ({
-          ...item,
-          order: index,
-        }));
+    //     const updatedItems = arrayMove(items, oldIndex, newIndex).map((item, index) => ({
+    //       ...item,
+    //       order: index,
+    //     }));
 
-        return updatedItems;
-      });
-    }
+    //     return updatedItems;
+    //   });
+    // }
   };
 
   const handleAddRoute = () => {
     router.replace("/protected/jobs?tab=new");
   };
 
-  const handleRemoveRoute = (id: string) => {
-    setJobs(jobs.filter((route) => route.id !== id));
+  const handleRemoveRoute = () => {
+    // const handleRemoveRoute = (id: string) => {
+    // setJobs(jobs.filter((route) => route.id !== id));
   };
 
-  const handleUpdateRoute = (id: string, field: keyof RouteType, value: string | boolean) => {
-    setJobs(jobs.map((route) => (route.id === id ? { ...route, [field]: value } : route)));
+  const handleUpdateRoute = () => {
+    // const handleUpdateRoute = (id: string, field: keyof Job, value: string | boolean) => {
+    // setJobs(jobs.map((route) => (route.id === id ? { ...route, [field]: value } : route)));
   };
 
   const handleSaveJobs = () => {
@@ -181,7 +197,7 @@ export function JobsManager({ jobs }: { jobs: Job[] }) {
       </div>
 
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={jobs} strategy={verticalListSortingStrategy}>
+        <SortableContext items={jobs as (UniqueIdentifier | { id: UniqueIdentifier; })[]} strategy={verticalListSortingStrategy}>
           <div className="space-y-2">
             {jobs.map((route) => (
               <SortableItem

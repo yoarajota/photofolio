@@ -42,9 +42,9 @@ const formFields = [
         title: string;
         seo_description: string;
         slug: string;
-        seo_keywords?: string | undefined;
+        seo_keywords: string;
       }, "title" | "seo_description" | "seo_keywords" | "slug">, 
-      form: UseFormReturn<{ title: string; seo_description: string; slug: string; seo_keywords?: string | undefined; }>,
+      form: UseFormReturn<{ title: string; seo_description: string; slug: string; seo_keywords: string; }>,
       generateSlug: (title: string) => void
     ) => (e: ChangeEvent<HTMLInputElement> & ChangeEvent<HTMLTextAreaElement>) => {
 

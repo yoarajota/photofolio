@@ -10,5 +10,7 @@ export const getAllJobs = async () => {
     .select("*")
     .order("created_at", { ascending: false });
 
+  console.log(error);
+
   return data ?? [];
 };

@@ -20,6 +20,10 @@ export default function LPHeader() {
 
   return (
     <header className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-sm border-b">
+      <div className="w-full bg-yellow-500 text-black text-center py-2 z-50">
+        🚧 IN DEVELOPMENT 🚧
+      </div>
+
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <div className="flex items-center">
           <motion.div

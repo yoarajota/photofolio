@@ -99,10 +99,6 @@ export default function Web() {
 
   return (
     <main className="min-h-screen flex flex-col items-center">
-      <div className="fixed top-0 left-0 w-full bg-yellow-500 text-black text-center py-2 z-50">
-        🚧 Este site está em desenvolvimento. Algumas funcionalidades podem não estar completas. 🚧
-      </div>
-
       <LPHeader />
 
       <section

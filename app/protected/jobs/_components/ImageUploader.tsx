@@ -46,6 +46,7 @@ export function ImageUploader() {
         id: Math.random().toString(36).substring(2, 9),
         file,
         preview: URL.createObjectURL(file),
+        url: URL.createObjectURL(file), 
         title: "",
         description: "",
         price: "",
@@ -69,7 +70,7 @@ export function ImageUploader() {
     }
   }
 
-  const handleUpdateImageField = (id: string, field: keyof ImageFile, value: string | string[]) => {
+  const handleUpdateImageField = (id: string, field: keyof ImageRegister, value: string | string[]) => {
     setImages((prev) => prev.map((img) => (img.id === id ? { ...img, [field]: value } : img)))
   }
 
@@ -132,7 +133,7 @@ export function ImageUploader() {
                     onClick={() => setSelectedImage(image.id)}
                   >
                     <img
-                      src={image.preview || "/placeholder.svg"}
+                      src={image.url || "/placeholder.svg"}
                       alt={image.title || "Preview"}
                       className="h-full w-full object-cover"
                     />

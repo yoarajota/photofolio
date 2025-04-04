@@ -16,6 +16,7 @@ import { SalesOverview } from "@/app/protected/_components/SalesOverview";
 import { SettingsForm } from "@/app/protected/_components/SettingsForm";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getAllJobs } from "../actions";
+import { Job } from "@/types";
 
 export default function DashboardTab({ tab }: { tab?: string }) {
   const [activeTab, setActiveTab] = useState<string>(tab ?? "overview");

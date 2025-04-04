@@ -12,19 +12,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
 import WatermarkEditor, { WatermarkConfig } from "@/app/protected/jobs/_components/WatermarkEditor"
 import { ScrollArea } from "@/components/ui/scroll-area"
-
-type ImageFile = {
-  id: string
-  file: File
-  preview: string
-  title: string
-  description: string
-  price: string
-  categories: string[]
-}
+import { ImageRegister } from "@/types"
 
 export function ImageUploader() {
-  const [images, setImages] = useState<ImageFile[]>([])
+  const [images, setImages] = useState<ImageRegister[]>([])
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [newCategory, setNewCategory] = useState("")
   const [watermarkConfig, setWatermarkConfig] = useState<WatermarkConfig | null>(null)
@@ -174,7 +165,7 @@ export function ImageUploader() {
           {currentImage ? (
             <div className="space-y-4">
               <WatermarkEditor 
-                imageUrl={images.find((img) => img.id === selectedImage)?.preview ?? null}
+                image={images.find((img) => img.id === selectedImage) ?? null}
                 initialConfig={watermarkConfig || undefined}
                 onSave={handleSaveWatermarkConfig}
               />

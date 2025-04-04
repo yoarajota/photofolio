@@ -14,9 +14,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Settings } from "lucide-react"
+import { ImageRegister  } from "@/types"
 
 interface WatermarkEditorProps {
-  imageUrl: string | null
+  image: ImageRegister | null
   onSave: (watermarkConfig: WatermarkConfig) => void
   initialConfig?: WatermarkConfig
 }
@@ -40,7 +41,7 @@ const SEO_DIMENSIONS = [
   { width: 1200, height: 900 },
 ]
 
-export default function WatermarkEditor({ imageUrl, onSave, initialConfig }: WatermarkEditorProps) {
+export default function WatermarkEditor({ image, onSave, initialConfig }: WatermarkEditorProps) {
   const [config, setConfig] = useState<WatermarkConfig>(
     initialConfig || {
       text: "© Minha Marca",
@@ -54,6 +55,7 @@ export default function WatermarkEditor({ imageUrl, onSave, initialConfig }: Wat
       positionY: 0,
     },
   )
+  
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -63,17 +65,15 @@ export default function WatermarkEditor({ imageUrl, onSave, initialConfig }: Wat
 
   // Load image once
   useEffect(() => {
-    if (!imageUrl) return
-
     const img = new Image()
     img.crossOrigin = "anonymous"
-    img.src = imageUrl
+    img.src = image?.url ?? ""
 
     img.onload = () => {
       setImageObj(img)
       setImageLoaded(true)
     }
-  }, [imageUrl])
+  }, [image])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -166,7 +166,17 @@ export default function WatermarkEditor({ imageUrl, onSave, initialConfig }: Wat
     setConfig((prev) => ({ ...prev, [key]: value }))
   }
 
-  const openModal = useCallback(() => {
+  const openModal = useCallback((isGlobal: boolean) => {
+    if (isGlobal) {
+      const storageGlobal = localStorage.getItem("watermark-config")
+
+      if (storageGlobal) {
+        setConfig(JSON.parse(storageGlobal))
+      } else {
+        localStorage.setItem("watermark-config", JSON.stringify(config))
+      }
+    }
+
     setIsModalOpen(true)
 
     setTimeout(() => {
@@ -206,188 +216,189 @@ export default function WatermarkEditor({ imageUrl, onSave, initialConfig }: Wat
   }
 
   return (
-    <div className="space-y-4">
-      <div className="relative">
-        <div className="aspect-video rounded-lg overflow-hidden bg-muted flex justify-center items-center">
-          <canvas 
-            ref={canvasRef} 
-            className="max-w-full h-auto object-contain" 
-            style={{ display: isModalOpen ? "none" : "block" }}
-          />
-        </div>
+    <>
+      <Button variant="secondary" size="sm" className="gap-2" onClick={() => openModal(true)}>
+        <Settings className="h-4 w-4" />
 
-        <div className="absolute bottom-4 right-4">
-          <Button variant="secondary" size="sm" className="gap-2" onClick={openModal}>
+        Configurar pre-set de Marca d&apos;água
+      </Button>
+
+      <div className="space-y-4">
+        <div className="relative">
+          <div className="aspect-video rounded-lg overflow-hidden bg-muted flex justify-center items-center">
+            <canvas 
+              ref={canvasRef} 
+              className="max-w-full h-auto object-contain" 
+              style={{ display: isModalOpen ? "none" : "block" }}
+            />
+          </div>
+
+          <Button variant="secondary" size="sm" className="gap-2 absolute bottom-4 right-4" onClick={() => openModal(false)}>
             <Settings className="h-4 w-4" />
             Configurar Marca d&apos;água
           </Button>
-          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <DialogContent className="max-w-[90vw] h-[80%] max-h-[90vh] overflow-y-auto">              
-              <DialogHeader>
-                <DialogTitle>Configurar Marca d&apos;água</DialogTitle>
-                <DialogDescription>Ajuste as configurações da marca d&apos;água para sua imagem.</DialogDescription>
-              </DialogHeader>
-
-              <div className="flex flex-col md:flex-row gap-6 py-4">
-                <div className="md:w-2/5 flex flex-col sm:flex-row gap-6">
-                  <div className="space-y-4 w-full">
-                    <div className="grid gap-2">
-                      <Label htmlFor="watermark-text">Texto da marca d&apos;água</Label>
-                      <Input
-                        id="watermark-text"
-                        value={config.text}
-                        onChange={(e) => updateConfig("text", e.target.value)}
-                        placeholder="Digite o texto da marca d'água"
-                        className="text-sm"
-                      />
-                    </div>
-
-                    <div className="grid gap-2">
-                      <div className="flex justify-between">
-                        <Label htmlFor="watermark-size">Tamanho</Label>
-                        <span className="text-sm text-muted-foreground">{config.size}px</span>
-                      </div>
-                      <Slider
-                        id="watermark-size"
-                        min={10}
-                        max={100}
-                        step={1}
-                        value={[config.size]}
-                        onValueChange={(value) => updateConfig("size", value[0])}
-                      />
-                    </div>
-
-                    <div className="grid gap-2">
-                      <div className="flex justify-between">
-                        <Label htmlFor="watermark-opacity">Opacidade</Label>
-                        <span className="text-sm text-muted-foreground">{Math.round(config.opacity * 100)}%</span>
-                      </div>
-                      <Slider
-                        id="watermark-opacity"
-                        min={0.1}
-                        max={1}
-                        step={0.05}
-                        value={[config.opacity]}
-                        onValueChange={(value) => updateConfig("opacity", value[0])}
-                      />
-                    </div>
-
-                    <div className="grid gap-2">
-                      <div className="flex justify-between">
-                        <Label htmlFor="watermark-rotation">Rotação</Label>
-                        <span className="text-sm text-muted-foreground">{config.rotation}°</span>
-                      </div>
-                      <Slider
-                        id="watermark-rotation"
-                        min={-180}
-                        max={180}
-                        step={5}
-                        value={[config.rotation]}
-                        onValueChange={(value) => updateConfig("rotation", value[0])}
-                      />
-                    </div>
-
-                    <div className="grid gap-2">
-                      <Label htmlFor="watermark-color">Cor</Label>
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-md border" style={{ backgroundColor: config.color }} />
-                        <Input
-                          id="watermark-color"
-                          type="color"
-                          value={config.color}
-                          onChange={(e) => updateConfig("color", e.target.value)}
-                          className="w-full h-10 text-sm"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 w-full">
-                    <div className="grid gap-2">
-                      <div className="flex justify-between">
-                        <Label htmlFor="watermark-spacing-x">Espaçamento X</Label>
-                        <span className="text-sm text-muted-foreground">{config.spacingX}px</span>
-                      </div>
-                      <Slider
-                        id="watermark-spacing-x"
-                        min={0}
-                        max={500}
-                        step={10}
-                        value={[config.spacingX]}
-                        onValueChange={(value) => updateConfig("spacingX", value[0])}
-                      />
-                    </div>
-
-                    <div className="grid gap-2">
-                      <div className="flex justify-between">
-                        <Label htmlFor="watermark-spacing-y">Espaçamento Y</Label>
-                        <span className="text-sm text-muted-foreground">{config.spacingY}px</span>
-                      </div>
-                      <Slider
-                        id="watermark-spacing-y"
-                        min={0}
-                        max={500}
-                        step={10}
-                        value={[config.spacingY]}
-                        onValueChange={(value) => updateConfig("spacingY", value[0])}
-                      />
-                    </div>
-
-                    <div className="grid gap-2">
-                      <div className="flex justify-between">
-                        <Label htmlFor="watermark-position-x">Posição X</Label>
-                        <span className="text-sm text-muted-foreground">{config.positionX}px</span>
-                      </div>
-                      <Slider
-                        id="watermark-position-x"
-                        min={-500}
-                        max={500}
-                        step={1}
-                        value={[config.positionX]}
-                        onValueChange={(value) => updateConfig("positionX", value[0])}
-                      />
-                    </div>
-
-                    <div className="grid gap-2">
-                      <div className="flex justify-between">
-                        <Label htmlFor="watermark-position-y">Posição Y</Label>
-                        <span className="text-sm text-muted-foreground">{config.positionY}px</span>
-                      </div>
-                      <Slider
-                        id="watermark-position-y"
-                        min={-500}
-                        max={500}
-                        step={1}
-                        value={[config.positionY]}
-                        onValueChange={(value) => updateConfig("positionY", value[0])}
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="w-full md:w-3/5 rounded-lg overflow-hidden bg-muted border flex justify-center items-center">
-                  <canvas ref={modalCanvasRef} className="max-w-full h-auto object-contain" />
-                </div>
-              </div>
-
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsModalOpen(false)}>
-                  Cancelar
-                </Button>
-                <Button onClick={handleSave} disabled={!imageLoaded}>
-                  Aplicar
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
 
-      <div className="flex justify-end">
-        <Button onClick={() => onSave(config)} disabled={!imageLoaded}>
-          Salvar configuração
-        </Button>
-      </div>
-    </div>
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-[90vw] h-[80%] max-h-[90vh] overflow-y-auto">              
+          <DialogHeader>
+            <DialogTitle>Configurar Marca d&apos;água</DialogTitle>
+            <DialogDescription>Ajuste as configurações da marca d&apos;água para sua imagem.</DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col md:flex-row gap-6 py-4">
+            <div className="md:w-2/5 flex flex-col sm:flex-row gap-6">
+              <div className="space-y-4 w-full">
+                <div className="grid gap-2">
+                  <Label htmlFor="watermark-text">Texto da marca d&apos;água</Label>
+                  <Input
+                    id="watermark-text"
+                    value={config.text}
+                    onChange={(e) => updateConfig("text", e.target.value)}
+                    placeholder="Digite o texto da marca d'água"
+                    className="text-sm"
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <div className="flex justify-between">
+                    <Label htmlFor="watermark-size">Tamanho</Label>
+                    <span className="text-sm text-muted-foreground">{config.size}px</span>
+                  </div>
+                  <Slider
+                    id="watermark-size"
+                    min={10}
+                    max={100}
+                    step={1}
+                    value={[config.size]}
+                    onValueChange={(value) => updateConfig("size", value[0])}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <div className="flex justify-between">
+                    <Label htmlFor="watermark-opacity">Opacidade</Label>
+                    <span className="text-sm text-muted-foreground">{Math.round(config.opacity * 100)}%</span>
+                  </div>
+                  <Slider
+                    id="watermark-opacity"
+                    min={0.1}
+                    max={1}
+                    step={0.05}
+                    value={[config.opacity]}
+                    onValueChange={(value) => updateConfig("opacity", value[0])}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <div className="flex justify-between">
+                    <Label htmlFor="watermark-rotation">Rotação</Label>
+                    <span className="text-sm text-muted-foreground">{config.rotation}°</span>
+                  </div>
+                  <Slider
+                    id="watermark-rotation"
+                    min={-180}
+                    max={180}
+                    step={5}
+                    value={[config.rotation]}
+                    onValueChange={(value) => updateConfig("rotation", value[0])}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <Label htmlFor="watermark-color">Cor</Label>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-md border" style={{ backgroundColor: config.color }} />
+                    <Input
+                      id="watermark-color"
+                      type="color"
+                      value={config.color}
+                      onChange={(e) => updateConfig("color", e.target.value)}
+                      className="w-full h-10 text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4 w-full">
+                <div className="grid gap-2">
+                  <div className="flex justify-between">
+                    <Label htmlFor="watermark-spacing-x">Espaçamento X</Label>
+                    <span className="text-sm text-muted-foreground">{config.spacingX}px</span>
+                  </div>
+                  <Slider
+                    id="watermark-spacing-x"
+                    min={0}
+                    max={500}
+                    step={10}
+                    value={[config.spacingX]}
+                    onValueChange={(value) => updateConfig("spacingX", value[0])}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <div className="flex justify-between">
+                    <Label htmlFor="watermark-spacing-y">Espaçamento Y</Label>
+                    <span className="text-sm text-muted-foreground">{config.spacingY}px</span>
+                  </div>
+                  <Slider
+                    id="watermark-spacing-y"
+                    min={0}
+                    max={500}
+                    step={10}
+                    value={[config.spacingY]}
+                    onValueChange={(value) => updateConfig("spacingY", value[0])}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <div className="flex justify-between">
+                    <Label htmlFor="watermark-position-x">Posição X</Label>
+                    <span className="text-sm text-muted-foreground">{config.positionX}px</span>
+                  </div>
+                  <Slider
+                    id="watermark-position-x"
+                    min={-500}
+                    max={500}
+                    step={1}
+                    value={[config.positionX]}
+                    onValueChange={(value) => updateConfig("positionX", value[0])}
+                  />
+                </div>
+
+                <div className="grid gap-2">
+                  <div className="flex justify-between">
+                    <Label htmlFor="watermark-position-y">Posição Y</Label>
+                    <span className="text-sm text-muted-foreground">{config.positionY}px</span>
+                  </div>
+                  <Slider
+                    id="watermark-position-y"
+                    min={-500}
+                    max={500}
+                    step={1}
+                    value={[config.positionY]}
+                    onValueChange={(value) => updateConfig("positionY", value[0])}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full md:w-3/5 rounded-lg overflow-hidden bg-muted border flex justify-center items-center">
+              <canvas ref={modalCanvasRef} className="max-w-full h-auto object-contain" />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSave} disabled={!imageLoaded}>
+              Aplicar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }

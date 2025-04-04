@@ -87,7 +87,7 @@ const formFields = [
   },
 ]
 
-export default function JobConfig({ setActiveTab }: { setActiveTab: (tab: string) => void }) {
+export default function JobConfig({ setActiveTab }: { setActiveTab?: (tab: string) => void }) {
   const router = useRouter()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -114,7 +114,10 @@ export default function JobConfig({ setActiveTab }: { setActiveTab: (tab: string
       });
 
       router.replace("/protected/jobs");
-      setActiveTab("jobs");
+      
+      if (setActiveTab) {
+        setActiveTab("jobs");
+      }
     } else {
       toast.error("Erro ao salvar configuração", {
         description: "Ocorreu um erro ao salvar as configurações do trabalho.",

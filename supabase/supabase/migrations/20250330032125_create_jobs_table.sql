@@ -5,6 +5,7 @@ CREATE TABLE jobs (
     seo_description VARCHAR(160) NOT NULL,
     seo_keywords TEXT,
     slug VARCHAR(255) NOT NULL,
+    active BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     

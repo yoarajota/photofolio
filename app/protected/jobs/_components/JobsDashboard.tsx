@@ -18,22 +18,18 @@ import { Job } from "@/types";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Plus } from "lucide-react";
 
-export default function JobsDashboard({
-  tab,
-}: {
-  tab?: string;
-}) {
+export default function JobsDashboard({ tab }: { tab?: string }) {
   const [activeTab, setActiveTab] = useState<string>(tab ?? "jobs");
   const [jobs, setJobs] = useState<Job[]>([]);
 
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (searchParams.get("tab")) {
-      setActiveTab(searchParams.get("tab") ?? "jobs")
+      setActiveTab(searchParams.get("tab") ?? "jobs");
     }
-  }, [searchParams])
-  
+  }, [searchParams]);
+
   useEffect(() => {
     const fetchJobs = async () => {
       const jobsData = await getAllJobs();
@@ -42,11 +38,7 @@ export default function JobsDashboard({
     };
 
     fetchJobs();
-  }, [])
-  
-  useEffect(() => {
-    console.log(activeTab)
-  }, [tab])
+  }, []);
 
   return (
     <Tabs
@@ -60,10 +52,8 @@ export default function JobsDashboard({
           <CardHeader>
             <CardTitle className="flex justify-between">
               Gerenciamento de Trabalhos Feitos
-            
               <Button variant="outline" onClick={() => setActiveTab("new")}>
                 <Plus className="mr-2 h-4 w-4" />
-                
                 Adicionar Trabalho
               </Button>
             </CardTitle>
@@ -80,8 +70,18 @@ export default function JobsDashboard({
         <Card>
           <CardHeader>
             <CardTitle>
-              {activeTab === "new" ? <Button size="icon" variant="outline" className="mr-2" onClick={() => setActiveTab("jobs")}><ChevronLeft className="h-4 w-4" /></Button> : <></>}
-
+              {activeTab === "new" ? (
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="mr-2"
+                  onClick={() => setActiveTab("jobs")}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+              ) : (
+                <></>
+              )}
               Crie ou altere a página de um trabalho
             </CardTitle>
             <CardDescription>

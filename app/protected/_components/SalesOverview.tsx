@@ -1,20 +1,33 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { BarChart, Calendar, Download, Search } from "lucide-react"
+import { useState } from "react";
+import { BarChart, Calendar, Download, Search } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type SalesProps = {
-  showDetails?: boolean
-}
+  showDetails?: boolean;
+};
 
 export function SalesOverview({ showDetails = false }: SalesProps) {
-  const [period, setPeriod] = useState("month")
+  const [period, setPeriod] = useState("month");
 
   // Sample sales data
   const salesData = [
@@ -34,7 +47,14 @@ export function SalesOverview({ showDetails = false }: SalesProps) {
       amount: 250.0,
       status: "completed",
     },
-    { id: "3", date: "2023-05-20", customer: "Carlos Santos", image: "Pôr do Sol", amount: 85.0, status: "processing" },
+    {
+      id: "3",
+      date: "2023-05-20",
+      customer: "Carlos Santos",
+      image: "Pôr do Sol",
+      amount: 85.0,
+      status: "processing",
+    },
     {
       id: "4",
       date: "2023-05-22",
@@ -59,7 +79,7 @@ export function SalesOverview({ showDetails = false }: SalesProps) {
       amount: 180.0,
       status: "processing",
     },
-  ]
+  ];
 
   return (
     <div className="space-y-4">
@@ -88,7 +108,11 @@ export function SalesOverview({ showDetails = false }: SalesProps) {
               </Button>
             </div>
             <div className="flex gap-2">
-              <Input placeholder="Buscar venda..." className="max-w-[300px]" type="search" />
+              <Input
+                placeholder="Buscar venda..."
+                className="max-w-[300px]"
+                type="search"
+              />
               <Button variant="outline" size="icon">
                 <Search className="h-4 w-4" />
               </Button>
@@ -113,10 +137,14 @@ export function SalesOverview({ showDetails = false }: SalesProps) {
                 <TableBody>
                   {salesData.map((sale) => (
                     <TableRow key={sale.id}>
-                      <TableCell>{new Date(sale.date).toLocaleDateString("pt-BR")}</TableCell>
+                      <TableCell>
+                        {new Date(sale.date).toLocaleDateString("pt-BR")}
+                      </TableCell>
                       <TableCell>{sale.customer}</TableCell>
                       <TableCell>{sale.image}</TableCell>
-                      <TableCell className="text-right">R$ {sale.amount.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">
+                        R$ {sale.amount.toFixed(2)}
+                      </TableCell>
                       <TableCell>
                         <div
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -125,7 +153,9 @@ export function SalesOverview({ showDetails = false }: SalesProps) {
                               : "bg-yellow-100 text-yellow-800"
                           }`}
                         >
-                          {sale.status === "completed" ? "Concluído" : "Processando"}
+                          {sale.status === "completed"
+                            ? "Concluído"
+                            : "Processando"}
                         </div>
                       </TableCell>
                     </TableRow>
@@ -137,6 +167,5 @@ export function SalesOverview({ showDetails = false }: SalesProps) {
         </>
       )}
     </div>
-  )
+  );
 }
-

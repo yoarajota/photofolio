@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { Eye } from "lucide-react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Job } from "@/types"
-import Link from "next/link"
+import { Eye } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Job } from "@/types";
+import Link from "next/link";
 
 function JobItem({ job }: { job: Job }) {
   return (
@@ -43,7 +43,7 @@ function JobItem({ job }: { job: Job }) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 export function JobsManager({ jobs }: { jobs: Job[] }) {
@@ -51,7 +51,9 @@ export function JobsManager({ jobs }: { jobs: Job[] }) {
     <div className="space-y-4">
       <div>
         <h3 className="text-lg font-medium">Páginas de Trabalhos</h3>
-        <p className="text-sm text-muted-foreground">Lista de trabalhos disponíveis.</p>
+        <p className="text-sm text-muted-foreground">
+          Lista de trabalhos disponíveis.
+        </p>
       </div>
 
       <div className="space-y-2">
@@ -60,5 +62,5 @@ export function JobsManager({ jobs }: { jobs: Job[] }) {
         ))}
       </div>
     </div>
-  )
+  );
 }

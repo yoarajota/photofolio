@@ -21,19 +21,22 @@ import { Job } from "@/types";
 export default function DashboardTab({ tab }: { tab?: string }) {
   const [activeTab, setActiveTab] = useState<string>(tab ?? "overview");
   const [jobs, setJobs] = useState<Job[]>([]);
-  const searchParams = useSearchParams()
-  const router = useRouter()
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     if (searchParams.get("tab")) {
-      setActiveTab(searchParams.get("tab") ?? "overview")
+      setActiveTab(searchParams.get("tab") ?? "overview");
     }
-  }, [searchParams])
+  }, [searchParams]);
 
-  const changeTab = useCallback((tab: string) => {
-    setActiveTab(tab)
-    router.push("/protected")
-  }, [setActiveTab]);
+  const changeTab = useCallback(
+    (tab: string) => {
+      setActiveTab(tab);
+      router.push("/protected");
+    },
+    [setActiveTab],
+  );
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -43,7 +46,7 @@ export default function DashboardTab({ tab }: { tab?: string }) {
     };
 
     fetchJobs();
-  }, [])
+  }, []);
 
   return (
     <Tabs

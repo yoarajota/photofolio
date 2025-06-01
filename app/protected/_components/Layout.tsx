@@ -1,13 +1,25 @@
-"use client"
+"use client";
 
-import { ImageIcon, LayoutDashboard, LogOut, Menu, Package, Settings } from "lucide-react"
-import Link from "next/link"
-import { useSearchParams } from "next/navigation"
+import {
+  ImageIcon,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Package,
+  Settings,
+} from "lucide-react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { signOutAction } from "@/app/actions";
 
 export default function Layout({
@@ -17,7 +29,7 @@ export default function Layout({
   children: React.ReactNode;
   pathname: string;
 }>) {
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
 
   const routes = [
     {
@@ -25,7 +37,8 @@ export default function Layout({
       icon: LayoutDashboard,
       href: "/protected",
       color: "text-sky-500",
-      active: pathname === "/protected" && searchParams.get("tab") !== "settings",
+      active:
+        pathname === "/protected" && searchParams.get("tab") !== "settings",
     },
     {
       label: "Trabalhos",
@@ -39,9 +52,10 @@ export default function Layout({
       icon: Settings,
       href: "/protected?tab=settings",
       color: "text-gray-500",
-      active: pathname === "/protected" && searchParams.get("tab") === "settings",
+      active:
+        pathname === "/protected" && searchParams.get("tab") === "settings",
     },
-  ]
+  ];
 
   return (
     <div className="flex h-screen w-full flex-col">
@@ -55,12 +69,14 @@ export default function Layout({
           </SheetTrigger>
           <SheetContent side="left" className="w-72">
             <div className="flex flex-col gap-4">
-            <SheetTitle>
-              <div className="flex items-center gap-2">
-                <ImageIcon className="h-6 w-6" />
-                <span className="text-lg font-semibold hidden sm:flex">Portfólio Admin</span>
-              </div>
-            </SheetTitle>
+              <SheetTitle>
+                <div className="flex items-center gap-2">
+                  <ImageIcon className="h-6 w-6" />
+                  <span className="text-lg font-semibold hidden sm:flex">
+                    Portfólio Admin
+                  </span>
+                </div>
+              </SheetTitle>
               <nav className="flex flex-col gap-2">
                 {routes.map((route) => (
                   <Link
@@ -80,12 +96,21 @@ export default function Layout({
         </Sheet>
         <div className="flex items-center gap-2">
           <ImageIcon className="h-6 w-6" />
-          <span className="text-lg font-semibold hidden md:flex">Portfólio Admin</span>
+          <span className="text-lg font-semibold hidden md:flex">
+            Portfólio Admin
+          </span>
         </div>
         <div className="ml-auto flex items-center gap-4">
-          <Input type="search" placeholder="Buscar..." className="md:w-64 lg:w-80 hidden md:flex" />
+          <Input
+            type="search"
+            placeholder="Buscar..."
+            className="md:w-64 lg:w-80 hidden md:flex"
+          />
           <Avatar>
-            <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Avatar" />
+            <AvatarImage
+              src="/placeholder.svg?height=32&width=32"
+              alt="Avatar"
+            />
             <AvatarFallback>FP</AvatarFallback>
           </Avatar>
         </div>
@@ -105,10 +130,10 @@ export default function Layout({
                 {route.label}
               </Link>
             ))}
-            <Button 
-              variant="outline" 
-              className="mt-auto flex items-center gap-2 justify-start" 
-              onClick={signOutAction} 
+            <Button
+              variant="outline"
+              className="mt-auto flex items-center gap-2 justify-start"
+              onClick={signOutAction}
             >
               <LogOut className="h-5 w-5" />
               Sair

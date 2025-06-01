@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { usePathname } from "next/navigation"
-import Layout from "./_components/Layout"
+import { usePathname } from "next/navigation";
+import Layout from "./_components/Layout";
 import { Suspense } from "react";
 
 export default function RootLayout({
@@ -9,13 +9,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   return (
     <Suspense>
-      <Layout pathname={pathname}>
-        {children}
-      </Layout>
+      <Layout pathname={pathname}>{children}</Layout>
     </Suspense>
   );
 }

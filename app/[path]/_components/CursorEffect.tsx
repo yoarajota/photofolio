@@ -3,24 +3,20 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { motion, useSpring } from "motion/react";
 
-const SVGFull = ({ color }: { color: string}) => {
+const SVGFull = ({ color }: { color: string }) => {
   return (
-    <g
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <g xmlns="http://www.w3.org/2000/svg">
       <path
         d="M87.5 -21.8C101.4 14.4 92.4 64.6 64.8 83.3C37.3 101.9 -8.9 88.9 -46.6 62C-84.3 35.1 -113.5 -5.6 -104.3 -35.3C-95.1 -64.9 -47.6 -83.5 -5.4 -81.7C36.8 -79.9 73.5 -57.9 87.5 -21.8"
         fill={color}
       />
     </g>
   );
-}
+};
 
-const SVGOutlined = ({ color }: { color: string}) => {
+const SVGOutlined = ({ color }: { color: string }) => {
   return (
-    <g
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <g xmlns="http://www.w3.org/2000/svg">
       <path
         d="M87.5 -21.8C101.4 14.4 92.4 64.6 64.8 83.3C37.3 101.9 -8.9 88.9 -46.6 62C-84.3 35.1 -113.5 -5.6 -104.3 -35.3C-95.1 -64.9 -47.6 -83.5 -5.4 -81.7C36.8 -79.9 73.5 -57.9 87.5 -21.8"
         fill="none"
@@ -29,7 +25,7 @@ const SVGOutlined = ({ color }: { color: string}) => {
       />
     </g>
   );
-}
+};
 
 export default function CursorEffect() {
   const cursorRef = useRef(null);

@@ -48,7 +48,9 @@ function Model() {
   );
 }
 
-export default function AnimatedCityModel({ sectionRef }: {
+export default function AnimatedCityModel({
+  sectionRef,
+}: {
   sectionRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const { scrollY } = useScroll();
@@ -106,10 +108,10 @@ export default function AnimatedCityModel({ sectionRef }: {
 
   return (
     <>
-        <Canvas camera={camera.current}>
-            <fog attach="fog" args={["#4d080c", 0, 200]} />
-            <Model />
-        </Canvas>
+      <Canvas camera={camera.current}>
+        <fog attach="fog" args={["#4d080c", 0, 200]} />
+        <Model />
+      </Canvas>
     </>
   );
 }

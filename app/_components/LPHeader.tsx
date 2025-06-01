@@ -1,22 +1,18 @@
-
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowRight,
-  Menu,
-} from "lucide-react";
+import { ArrowRight, Menu } from "lucide-react";
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function LPHeader() {
-    function scrollToSection(id: string) {
-        const element = document.getElementById(id);
-            if (element) {
-            element.scrollIntoView({
-                behavior: "smooth",
-            });
-        }
+  function scrollToSection(id: string) {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+      });
     }
+  }
 
   return (
     <header className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-sm border-b">
@@ -46,7 +42,7 @@ export default function LPHeader() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            onClick={() => scrollToSection('hero')}
+            onClick={() => scrollToSection("hero")}
           >
             Início
           </motion.a>
@@ -57,7 +53,7 @@ export default function LPHeader() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            onClick={() => scrollToSection('portfolio')}
+            onClick={() => scrollToSection("portfolio")}
           >
             Portfólio
           </motion.a>
@@ -68,7 +64,7 @@ export default function LPHeader() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            onClick={() => scrollToSection('services')}
+            onClick={() => scrollToSection("services")}
           >
             Serviços
           </motion.a>
@@ -79,7 +75,7 @@ export default function LPHeader() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            onClick={() => scrollToSection('about')}
+            onClick={() => scrollToSection("about")}
           >
             Sobre
           </motion.a>
@@ -90,7 +86,7 @@ export default function LPHeader() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            onClick={() => scrollToSection('contact')}
+            onClick={() => scrollToSection("contact")}
           >
             Contato
           </motion.a>
@@ -119,7 +115,7 @@ export default function LPHeader() {
                 <a
                   href="#"
                   className="text-lg font-medium hover:text-primary transition-colors"
-                  onClick={() => scrollToSection('about')}
+                  onClick={() => scrollToSection("about")}
                 >
                   Início
                 </a>
@@ -127,7 +123,7 @@ export default function LPHeader() {
                 <a
                   href="#portfolio"
                   className="text-lg font-medium hover:text-primary transition-colors"
-                  onClick={() => scrollToSection('portfolio')}
+                  onClick={() => scrollToSection("portfolio")}
                 >
                   Portfólio
                 </a>
@@ -135,7 +131,7 @@ export default function LPHeader() {
                 <a
                   href="#services"
                   className="text-lg font-medium hover:text-primary transition-colors"
-                  onClick={() => scrollToSection('services')}
+                  onClick={() => scrollToSection("services")}
                 >
                   Serviços
                 </a>
@@ -143,7 +139,7 @@ export default function LPHeader() {
                 <a
                   href="#about"
                   className="text-lg font-medium hover:text-primary transition-colors"
-                  onClick={() => scrollToSection('about')}
+                  onClick={() => scrollToSection("about")}
                 >
                   Sobre
                 </a>
@@ -151,7 +147,7 @@ export default function LPHeader() {
                 <a
                   href="#contact"
                   className="text-lg font-medium hover:text-primary transition-colors"
-                  onClick={() => scrollToSection('contact')}
+                  onClick={() => scrollToSection("contact")}
                 >
                   Contato
                 </a>

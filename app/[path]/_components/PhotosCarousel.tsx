@@ -9,7 +9,7 @@ const previewSize = 48;
 interface CarouselImage {
   id: number;
   src: string;
-  miniature: string;  
+  miniature: string;
   alt: string;
 }
 
@@ -17,91 +17,106 @@ const images: CarouselImage[] = [
   {
     id: 1,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 1",
   },
   {
     id: 2,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 2",
   },
   {
     id: 3,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 3",
   },
   {
     id: 4,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 4",
   },
   {
     id: 5,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 5",
   },
   {
     id: 6,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 6",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
   {
     id: 7,
     src: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=800&h=600&fit=crop&q=80",
-    miniature: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
+    miniature:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=48&h=48&fit=crop&q=80",
     alt: "Image 7",
   },
 ];
@@ -193,7 +208,7 @@ export default function CarouselWithSelector({
         stiffness: 300,
         damping: 30,
         mass: 1,
-      }
+      },
     );
   };
 
@@ -208,7 +223,7 @@ export default function CarouselWithSelector({
       setActiveIndex(index);
 
       let newPosition = -previewSize / 2;
-      let toScrollTo = newPosition
+      let toScrollTo = newPosition;
 
       if (index !== 0) {
         const position = imagesMap.get(index) as {
@@ -216,7 +231,7 @@ export default function CarouselWithSelector({
         };
 
         newPosition = position.top + previewSize / 2;
-        toScrollTo = position.top + -previewSize / 2
+        toScrollTo = position.top + -previewSize / 2;
       }
 
       miniaturesWrapper.current?.scrollTo({
@@ -234,15 +249,17 @@ export default function CarouselWithSelector({
           stiffness: 300,
           damping: 30,
           mass: 1,
-        }
+        },
       );
     },
-    [activeIndex, imagesMap, previewSize, miniaturesWrapper]
+    [activeIndex, imagesMap, previewSize, miniaturesWrapper],
   );
 
   return (
     <div
-      className={"absolute flex items-center z-10 h-screen w-screen overflow-y-hidden"}
+      className={
+        "absolute flex items-center z-10 h-screen w-screen overflow-y-hidden"
+      }
       onWheel={handleWheel}
     >
       <div ref={wrappper} className="w-full max-w-4xl mx-auto">

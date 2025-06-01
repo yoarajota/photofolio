@@ -1,16 +1,25 @@
-"use client"
+"use client";
 
-import { ControllerRenderProps, useForm, UseFormReturn } from "react-hook-form"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { ControllerRenderProps, useForm, UseFormReturn } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { ChangeEvent } from "react"
-import { saveJob } from "../actions"
+import { ChangeEvent } from "react";
+import { saveJob } from "../actions";
 import { useRouter } from "next/navigation";
+import { Job } from "@/types";
 
 const formSchema = z.object({
   title: z.string().min(3, {
@@ -28,7 +37,7 @@ const formSchema = z.object({
     .regex(/^[a-z0-9-]+$/, {
       message: "A rota deve conter apenas letras minúsculas, números e hífens.",
     }),
-})
+});
 
 const formFields = [
   {
@@ -37,35 +46,45 @@ const formFields = [
     placeholder: "Casamento João e Maria",
     description: "Este é o título principal que será exibido na página.",
     component: Input,
-    onChange: (
-      field: ControllerRenderProps<{
-        title: string;
-        seo_description: string;
-        slug: string;
-        seo_keywords: string;
-      }, "title" | "seo_description" | "seo_keywords" | "slug">, 
-      form: UseFormReturn<{ title: string; seo_description: string; slug: string; seo_keywords: string; }>,
-      generateSlug: (title: string) => void
-    ) => (e: ChangeEvent<HTMLInputElement> & ChangeEvent<HTMLTextAreaElement>) => {
+    onChange:
+      (
+        field: ControllerRenderProps<
+          {
+            title: string;
+            seo_description: string;
+            slug: string;
+            seo_keywords: string;
+          },
+          "title" | "seo_description" | "seo_keywords" | "slug"
+        >,
+        form: UseFormReturn<{
+          title: string;
+          seo_description: string;
+          slug: string;
+          seo_keywords: string;
+        }>,
+        generateSlug: (title: string) => void,
+      ) =>
+      (e: ChangeEvent<HTMLInputElement> & ChangeEvent<HTMLTextAreaElement>) => {
+        const oldSlug = generateSlug(form.getValues("title")) ?? "";
 
-      const oldSlug = generateSlug(form.getValues("title")) ?? ""
+        field.onChange(e);
 
-      field.onChange(e)
+        const newSlug = generateSlug(e.target.value) ?? "";
+        const currentSlug: string | null = form.getValues("slug") ?? null;
 
-      const newSlug = generateSlug(e.target.value) ?? ""
-      const currentSlug: string | null = form.getValues("slug") ?? null
-
-      if (currentSlug === oldSlug || !currentSlug) {
-        form.setValue("slug", newSlug)
-      }
-    },
+        if (currentSlug === oldSlug || !currentSlug) {
+          form.setValue("slug", newSlug);
+        }
+      },
     wrapperClassName: "col-span-full",
   },
   {
     name: "seo_description",
     label: "Descrição SEO",
     placeholder: "Uma breve descrição do trabalho para melhorar o SEO",
-    description: "Esta descrição será usada nas meta tags para melhorar o SEO. Máximo de 160 caracteres.",
+    description:
+      "Esta descrição será usada nas meta tags para melhorar o SEO. Máximo de 160 caracteres.",
     component: Textarea,
     className: "resize-none",
     wrapperClassName: "col-span-full",
@@ -81,14 +100,28 @@ const formFields = [
     name: "slug",
     label: "Rota personalizada",
     placeholder: "casamento-joao-maria",
-    description: "A URL personalizada para este trabalho. Use apenas letras minúsculas, números e hífens.",
+    description:
+      "A URL personalizada para este trabalho. Use apenas letras minúsculas, números e hífens.",
     component: Input,
     prefix: "/jobs/",
   },
-]
+];
 
-export default function JobConfig({ setActiveTab }: { setActiveTab?: (tab: string) => void }) {
-  const router = useRouter()
+interface JobConfigProps {
+  setActiveTab?: (tab: string) => void;
+  data: z.infer<typeof formSchema>;
+}
+
+export default function JobConfig({
+  setActiveTab,
+  data = {
+    title: "",
+    seo_description: "",
+    seo_keywords: "",
+    slug: "",
+  } as z.infer<typeof formSchema>,
+}: JobConfigProps) {
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -98,7 +131,7 @@ export default function JobConfig({ setActiveTab }: { setActiveTab?: (tab: strin
       seo_keywords: "",
       slug: "",
     },
-  })
+  });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { error } = await saveJob({
@@ -106,7 +139,7 @@ export default function JobConfig({ setActiveTab }: { setActiveTab?: (tab: strin
       seo_description: values.seo_description,
       seo_keywords: values.seo_keywords,
       slug: values.slug,
-    })
+    } as Job);
 
     if (!error) {
       toast("Configuração salva", {
@@ -114,7 +147,7 @@ export default function JobConfig({ setActiveTab }: { setActiveTab?: (tab: strin
       });
 
       router.replace("/protected/jobs");
-      
+
       if (setActiveTab) {
         setActiveTab("jobs");
       }
@@ -134,27 +167,40 @@ export default function JobConfig({ setActiveTab }: { setActiveTab?: (tab: strin
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/[^\w\s-]/g, "")
       .replace(/\s+/g, "-")
-      .replace(/-+/g, "-")
+      .replace(/-+/g, "-");
   }
 
   return (
     <>
-      <h1 className="text-xl font-bold mb-6">Configuração do Página do Trabalho</h1>
+      <h1 className="text-xl font-bold mb-6">
+        Configuração do Página do Trabalho
+      </h1>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
           {formFields.map((field) => (
             <FormField
               key={field.name}
               control={form.control}
-              name={field.name as "title" | "seo_description" | "seo_keywords" | "slug"}
+              name={
+                field.name as
+                  | "title"
+                  | "seo_description"
+                  | "seo_keywords"
+                  | "slug"
+              }
               render={({ field: formField }) => (
                 <FormItem className={field.wrapperClassName}>
                   <FormLabel>{field.label}</FormLabel>
                   <FormControl>
                     {field.prefix ? (
                       <div className="flex items-center space-x-2">
-                        <span className="text-muted-foreground">{field.prefix}</span>
+                        <span className="text-muted-foreground">
+                          {field.prefix}
+                        </span>
                         <field.component
                           placeholder={field.placeholder}
                           {...formField}
@@ -166,7 +212,11 @@ export default function JobConfig({ setActiveTab }: { setActiveTab?: (tab: strin
                         placeholder={field.placeholder}
                         {...formField}
                         className={field.className}
-                        onChange={field.onChange ? field.onChange(formField, form, generateSlug) : formField.onChange}
+                        onChange={
+                          field.onChange
+                            ? field.onChange(formField, form, generateSlug)
+                            : formField.onChange
+                        }
                       />
                     )}
                   </FormControl>
@@ -185,6 +235,5 @@ export default function JobConfig({ setActiveTab }: { setActiveTab?: (tab: strin
         </form>
       </Form>
     </>
-  )
+  );
 }
-

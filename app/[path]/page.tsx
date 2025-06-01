@@ -11,9 +11,11 @@ export const metadata: Metadata = {
     "Freelance event photography portfolio with interactive elements",
 };
 
-export default async function Page(props: { params: Promise<{ path: string }> }) {
+export default async function Page(props: {
+  params: Promise<{ path: string }>;
+}) {
   const params: {
-    path: string
+    path: string;
   } = await props.params;
 
   return (

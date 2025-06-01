@@ -1,76 +1,85 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import Image from "next/image"
-import { motion, AnimatePresence } from "motion/react"
-import { X } from "lucide-react"
+import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import { motion, AnimatePresence } from "motion/react";
+import { X } from "lucide-react";
 
 // Sample gallery items with only images
 const galleryItems = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
+    image:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
+    image:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
+    image:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 4,
-    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
+    image:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 5,
-    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
+    image:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 6,
-    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
+    image:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 7,
-    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
+    image:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 8,
-    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
+    image:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
   {
     id: 9,
-    image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
+    image:
+      "https://images.unsplash.com/photo-1552168324-d612d77725e3?w=300&h=300&fit=crop&q=80",
   },
-]
+];
 
 export default function PhotoGallery() {
-  const [selectedItem, setSelectedItem] = useState<number | null>(null)
-  const galleryRef = useRef<HTMLDivElement>(null)
+  const [selectedItem, setSelectedItem] = useState<number | null>(null);
+  const galleryRef = useRef<HTMLDivElement>(null);
 
   // Lock body scroll when an item is selected
   useEffect(() => {
     if (selectedItem !== null) {
-      document.body.style.overflow = "hidden"
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = ""
+      document.body.style.overflow = "";
     }
 
     return () => {
-      document.body.style.overflow = ""
-    }
-  }, [selectedItem])
+      document.body.style.overflow = "";
+    };
+  }, [selectedItem]);
 
   // Handle item selection
   const handleItemClick = (id: number) => {
-    setSelectedItem(id)
-  }
+    setSelectedItem(id);
+  };
 
   // Close the expanded view
   const handleClose = () => {
-    setSelectedItem(null)
-  }
+    setSelectedItem(null);
+  };
 
   return (
     <div className="absolute left-1/2 -translate-x-1/2 w-4/5 md:w-3/5 z-10">
@@ -165,4 +174,3 @@ export default function PhotoGallery() {
     </div>
   );
 }
-

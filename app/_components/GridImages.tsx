@@ -46,10 +46,7 @@ const images = [
   },
 ];
 
-const Item = ({ src, index }: {
-  src: string;
-  index: number;
-}) => {
+const Item = ({ src, index }: { src: string; index: number }) => {
   const ref = useRef(null);
 
   const inView = useInView(ref, {
@@ -78,7 +75,9 @@ const Item = ({ src, index }: {
   );
 };
 
-export default function GridImages({ sectionRef }: {
+export default function GridImages({
+  sectionRef,
+}: {
   sectionRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const { scrollY } = useScroll();

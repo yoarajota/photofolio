@@ -21,7 +21,7 @@ function WaveShaderMaterial({
       uScrollProgress: { value: 0 },
       uMousePosition: { value: new THREE.Vector2(0, 0) },
     }),
-    []
+    [],
   );
 
   return (
@@ -155,31 +155,31 @@ function ParticleWaves({
 
     const deltaTime = Math.min(
       0.1,
-      clock.getElapsedTime() - prevTimeRef.current
+      clock.getElapsedTime() - prevTimeRef.current,
     );
     prevTimeRef.current = clock.getElapsedTime();
 
     if (mousePosition.x !== null && mousePosition.y !== null) {
       targetIntensityRef.current = Math.min(
         1.5,
-        0.5 + Math.abs(mousePosition.x) * 1.0
+        0.5 + Math.abs(mousePosition.x) * 1.0,
       );
 
       targetSpeedRef.current = Math.min(
         1.2,
-        0.5 + Math.abs(mousePosition.y) * 0.7
+        0.5 + Math.abs(mousePosition.y) * 0.7,
       );
 
       if (meshRef.current.material.uniforms.uMousePosition) {
         mousePositionRef.current.x = lerp(
           mousePositionRef.current.x,
           mousePosition.x,
-          0.03
+          0.03,
         );
         mousePositionRef.current.y = lerp(
           mousePositionRef.current.y,
           mousePosition.y,
-          0.03
+          0.03,
         );
 
         meshRef.current.material.uniforms.uMousePosition.value.x =
@@ -193,22 +193,25 @@ function ParticleWaves({
     }
 
     const smoothFactor = 0.03;
-    
+
     currentIntensityRef.current = lerp(
       currentIntensityRef.current,
       targetIntensityRef.current,
-      smoothFactor
+      smoothFactor,
     );
 
     currentSpeedRef.current = lerp(
       currentSpeedRef.current,
       targetSpeedRef.current,
-      smoothFactor
+      smoothFactor,
     );
 
-    meshRef.current.material.uniforms.uWaveIntensity.value = currentIntensityRef.current;
-    meshRef.current.material.uniforms.uWaveSpeed.value = currentSpeedRef.current;
-    meshRef.current.material.uniforms.uTime.value += deltaTime * currentSpeedRef.current * 0.6;
+    meshRef.current.material.uniforms.uWaveIntensity.value =
+      currentIntensityRef.current;
+    meshRef.current.material.uniforms.uWaveSpeed.value =
+      currentSpeedRef.current;
+    meshRef.current.material.uniforms.uTime.value +=
+      deltaTime * currentSpeedRef.current * 0.6;
   });
 
   return (
@@ -258,11 +261,11 @@ export default function HalftoneWavesBackground({
       | {
           clientX: number;
           clientY: number;
-        }
+        },
   ) => {
     const x = (event.clientX / window.innerWidth) * 2 - 1;
     const y = -(event.clientY / window.innerHeight) * 2 + 1;
-    
+
     setMousePosition({ x, y });
   };
 

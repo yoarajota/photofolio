@@ -1,4 +1,4 @@
-import JobsForm from "@/app/protected/jobs/_components/JobsDashboard";
+import JobsForm from "@/app/protected/jobs/_components/JobsForm";
 import {
   Card,
   CardContent,
@@ -6,12 +6,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getJob } from "../actions";
+import { Job } from "@/types";
 
 export default async function Web(props: {
-  searchParams: Promise<{
-    tab?: string;
-  }>;
+  params: Promise<{ id: number }>;
 }) {
+  const params: {
+    id: number;
+  } = await props.params;
+
+  const job = await getJob(params.id);
+
   return (
     <Card>
       <CardHeader>
@@ -21,7 +27,9 @@ export default async function Web(props: {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <JobsForm />
+        <JobsForm 
+          data={job.data as Job}
+        />
       </CardContent>
     </Card>
   );

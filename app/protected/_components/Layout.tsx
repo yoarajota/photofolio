@@ -11,9 +11,7 @@ import {
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetContent,
@@ -101,7 +99,7 @@ export default function Layout({
           </span>
         </div>
         <div className="ml-auto flex items-center gap-4">
-          <Input
+          {/* <Input
             type="search"
             placeholder="Buscar..."
             className="md:w-64 lg:w-80 hidden md:flex"
@@ -112,7 +110,7 @@ export default function Layout({
               alt="Avatar"
             />
             <AvatarFallback>FP</AvatarFallback>
-          </Avatar>
+          </Avatar> */}
         </div>
       </nav>
       <div className="flex flex-1 pt-16">

@@ -63,7 +63,7 @@ const formFields = [
           slug: string;
           seo_keywords: string;
         }>,
-        generateSlug: (title: string) => void,
+        generateSlug: (title: string) => void
       ) =>
       (e: ChangeEvent<HTMLInputElement> & ChangeEvent<HTMLTextAreaElement>) => {
         const oldSlug = generateSlug(form.getValues("title")) ?? "";
@@ -109,7 +109,7 @@ const formFields = [
 
 interface JobConfigProps {
   setActiveTab?: (tab: string) => void;
-  data: z.infer<typeof formSchema>;
+  data?: z.infer<typeof formSchema> | Job;
 }
 
 export default function JobConfig({
@@ -119,22 +119,20 @@ export default function JobConfig({
     seo_description: "",
     seo_keywords: "",
     slug: "",
-  } as z.infer<typeof formSchema>,
+  } as z.infer<typeof formSchema> | Job,
 }: JobConfigProps) {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      title: "",
-      seo_description: "",
-      seo_keywords: "",
-      slug: "",
-    },
+    defaultValues: data,
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { error } = await saveJob({
+    const propsData = data as Job;
+
+    const { error, data: jobData } = await saveJob({
+      id: propsData?.id ?? null,
       title: values.title,
       seo_description: values.seo_description,
       seo_keywords: values.seo_keywords,
@@ -146,7 +144,11 @@ export default function JobConfig({
         description: "As configurações do trabalho foram salvas com sucesso.",
       });
 
-      router.replace("/protected/jobs");
+      if (!propsData?.id) {
+        router.replace(`/protected/jobs/${jobData.id}`);
+      } else {
+        router.replace("/protected/jobs");
+      }
 
       if (setActiveTab) {
         setActiveTab("jobs");

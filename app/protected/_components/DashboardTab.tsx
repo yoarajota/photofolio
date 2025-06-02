@@ -35,7 +35,7 @@ export default function DashboardTab({ tab }: { tab?: string }) {
       setActiveTab(tab);
       router.push("/protected");
     },
-    [setActiveTab],
+    [setActiveTab]
   );
 
   useEffect(() => {

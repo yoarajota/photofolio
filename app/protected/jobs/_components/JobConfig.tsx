@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { ChangeEvent } from "react";
-import { saveJob } from "../actions";
+import { saveJob, updateJob } from "../actions";
 import { useRouter } from "next/navigation";
 import { Job } from "@/types";
 
@@ -131,13 +131,26 @@ export default function JobConfig({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const propsData = data as Job;
 
-    const { error, data: jobData } = await saveJob({
-      id: propsData?.id ?? null,
-      title: values.title,
-      seo_description: values.seo_description,
-      seo_keywords: values.seo_keywords,
-      slug: values.slug,
-    } as Job);
+    let error = null;
+    let jobData = null;
+
+    if (propsData?.id) {
+      ({ error, data: jobData } = await updateJob({
+        id: propsData?.id ?? null,
+        title: values.title,
+        seo_description: values.seo_description,
+        seo_keywords: values.seo_keywords,
+        slug: values.slug,
+      } as Job));
+    } else {
+      ({ error, data: jobData } = await saveJob({
+        id: propsData?.id ?? null,
+        title: values.title,
+        seo_description: values.seo_description,
+        seo_keywords: values.seo_keywords,
+        slug: values.slug,
+      } as Job));
+    }
 
     if (!error) {
       toast("Configuração salva", {

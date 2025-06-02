@@ -29,7 +29,11 @@ function JobItem({ job }: { job: Job }) {
 
             <div className="flex justify-end">
               <Button variant="outline" size="icon" asChild>
-                <Link href={job.slug} target="_blank" rel="noopener noreferrer">
+                <Link
+                  href={`/${job.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Eye className="h-4 w-4" />
                 </Link>
               </Button>

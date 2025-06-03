@@ -10,33 +10,27 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import WatermarkEditor, {
-  WatermarkConfig,
-} from "@/app/protected/jobs/_components/WatermarkEditor";
+import WatermarkEditor from "@/app/protected/jobs/_components/WatermarkEditor";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ImageRegister } from "@/types";
+import { ImageRegister, WatermarkConfig } from "@/types";
 
-export function ImageUploader() {
-  const [images, setImages] = useState<ImageRegister[]>([]);
+interface ImageUploaderProps {
+  defaultImages?: ImageRegister[];
+}
+
+export function ImageUploader({ defaultImages }: ImageUploaderProps) {
+  const [images, setImages] = useState<ImageRegister[]>(defaultImages || []);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [newCategory, setNewCategory] = useState("");
-  const [watermarkConfig, setWatermarkConfig] =
-    useState<WatermarkConfig | null>(null);
-
-  // const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0]
-  //   if (!file) return
-
-  //   const reader = new FileReader()
-  //   reader.onload = (event) => {
-  //     setSelectedImage(event.target?.result as string)
-  //   }
-  //   reader.readAsDataURL(file)
-  // }, [])
 
   const handleSaveWatermarkConfig = useCallback((config: WatermarkConfig) => {
-    setWatermarkConfig(config);
-    alert("Configuração de marca d'água salva com sucesso!");
+    setImages((prev) =>
+      prev.map((img) =>
+        img.id === selectedImage ? { ...img, watermark_config: config } : img
+      )
+    );
+
+    toast("Configuração de marca d'água salva com sucesso!");
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -49,11 +43,11 @@ export function ImageUploader() {
         id: Math.random().toString(36).substring(2, 9),
         file,
         preview: URL.createObjectURL(file),
-        url: URL.createObjectURL(file),
         title: "",
         description: "",
         price: "",
         categories: [],
+        watermark_config: null,
       }));
 
       setImages((prev) => [...prev, ...newImages]);
@@ -76,10 +70,10 @@ export function ImageUploader() {
   const handleUpdateImageField = (
     id: string,
     field: keyof ImageRegister,
-    value: string | string[],
+    value: string | string[]
   ) => {
     setImages((prev) =>
-      prev.map((img) => (img.id === id ? { ...img, [field]: value } : img)),
+      prev.map((img) => (img.id === id ? { ...img, [field]: value } : img))
     );
   };
 
@@ -104,7 +98,7 @@ export function ImageUploader() {
       handleUpdateImageField(
         id,
         "categories",
-        currentImage.categories.filter((c) => c !== category),
+        currentImage.categories.filter((c) => c !== category)
       );
     }
   };
@@ -123,12 +117,23 @@ export function ImageUploader() {
 
   return (
     <>
-      <h1 className="text-xl font-bold mb-6">
+      <h1 className="text-xl font-bold mb-2">
         Configuração de Imagens do Trabalho
       </h1>
 
+      <p className="text-sm text-muted-foreground">
+        Aqui você pode fazer upload de imagens para o trabalho, adicionar
+        informações como título, descrição, preço e categorias, além de
+        configurar uma marca d&apos;água para as imagens.
+      </p>
+
+      <p className="text-sm text-muted-foreground mb-4">
+        Note que a qualidade das imagens será reduzida para otimizar o
+        desempenho do site.
+      </p>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-1 space-y-4">
+        <div className="md:col-span-1 space-y-4 relative">
           <div
             {...getRootProps()}
             className="border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors"
@@ -144,6 +149,7 @@ export function ImageUploader() {
             <h3 className="text-sm font-medium">
               Imagens selecionadas ({images.length})
             </h3>
+
             <ScrollArea className="h-[300px] pr-3">
               <div className="grid grid-cols-3 gap-2">
                 {images.map((image) => (
@@ -153,10 +159,11 @@ export function ImageUploader() {
                     onClick={() => setSelectedImage(image.id)}
                   >
                     <img
-                      src={image.url || "/placeholder.svg"}
+                      src={image.path || "/placeholder.svg"}
                       alt={image.title || "Preview"}
                       className="h-full w-full object-cover"
                     />
+
                     <Button
                       variant="destructive"
                       size="icon"
@@ -175,7 +182,7 @@ export function ImageUploader() {
           </div>
 
           {images.length > 0 && (
-            <Button className="w-full" onClick={handleUpload}>
+            <Button className="w-full absolute bottom-0" onClick={handleUpload}>
               <Upload className="mr-2 h-4 w-4" />
               Enviar {images.length} imagens
             </Button>
@@ -201,7 +208,7 @@ export function ImageUploader() {
                       handleUpdateImageField(
                         currentImage.id,
                         "title",
-                        e.target.value,
+                        e.target.value
                       )
                     }
                     placeholder="Título da imagem"
@@ -217,7 +224,7 @@ export function ImageUploader() {
                       handleUpdateImageField(
                         currentImage.id,
                         "description",
-                        e.target.value,
+                        e.target.value
                       )
                     }
                     placeholder="Descrição da imagem"
@@ -234,7 +241,7 @@ export function ImageUploader() {
                       handleUpdateImageField(
                         currentImage.id,
                         "price",
-                        e.target.value,
+                        e.target.value
                       )
                     }
                     placeholder="0,00"

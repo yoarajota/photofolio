@@ -13,8 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Settings } from "lucide-react";
-import { ImageRegister } from "@/types";
+import { Globe, Image as ImageIcon } from "lucide-react";
+import { ImageRegister, WatermarkConfig } from "@/types";
 
 interface WatermarkEditorProps {
   image: ImageRegister | null;
@@ -22,17 +22,17 @@ interface WatermarkEditorProps {
   initialConfig?: WatermarkConfig;
 }
 
-export interface WatermarkConfig {
-  text: string;
-  size: number;
-  opacity: number;
-  color: string;
-  rotation: number;
-  spacingX: number;
-  spacingY: number;
-  positionX: number;
-  positionY: number;
-}
+const DEFAULT_CONFIG: WatermarkConfig = {
+  text: "© Minha Marca",
+  size: 24,
+  opacity: 0.7,
+  color: "#ffffff",
+  rotation: 0,
+  spacingX: 100,
+  spacingY: 100,
+  positionX: 0,
+  positionY: 0,
+};
 
 const SEO_DIMENSIONS = [
   { width: 1600, height: 900 },
@@ -41,103 +41,120 @@ const SEO_DIMENSIONS = [
   { width: 1200, height: 900 },
 ];
 
+type ModalMode = "global" | "specific" | null;
+
 export default function WatermarkEditor({
   image,
   onSave,
   initialConfig,
 }: WatermarkEditorProps) {
-  const [config, setConfig] = useState<WatermarkConfig>(
-    initialConfig || {
-      text: "© Minha Marca",
-      size: 24,
-      opacity: 0.7,
-      color: "#ffffff",
-      rotation: 0,
-      spacingX: 100,
-      spacingY: 100,
-      positionX: 0,
-      positionY: 0,
-    },
+  const [currentConfig, setCurrentConfig] = useState<WatermarkConfig>(
+    initialConfig || DEFAULT_CONFIG
   );
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  console.log("Current Config:", initialConfig);
+
+  const [editingConfig, setEditingConfig] =
+    useState<WatermarkConfig>(DEFAULT_CONFIG);
+
+  const [modalMode, setModalMode] = useState<ModalMode>(null);
+  const [globalConfig, setGlobalConfig] =
+    useState<WatermarkConfig>(DEFAULT_CONFIG);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const modalCanvasRef = useRef<HTMLCanvasElement>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageObj, setImageObj] = useState<HTMLImageElement | null>(null);
 
-  // Load image once
   useEffect(() => {
+    const storedGlobal = localStorage.getItem("watermark-config-global");
+    if (storedGlobal) {
+      const parsed = JSON.parse(storedGlobal);
+      setGlobalConfig(parsed);
+
+      if (!initialConfig) {
+        setCurrentConfig(parsed);
+      }
+    }
+  }, [initialConfig]);
+
+  useEffect(() => {
+    if (!image?.path) return;
+
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.src = image?.url ?? "";
+    img.src = image.path;
 
     img.onload = () => {
       setImageObj(img);
       setImageLoaded(true);
     };
+
+    img.onerror = () => {
+      setImageLoaded(false);
+    };
   }, [image]);
 
   useEffect(() => {
+    updateMainCanvas();
+  }, [imageObj, currentConfig]);
+
+  const updateMainCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || !imageObj) return;
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas dimensions to match image
     const { width, height } = getBestFitDimensions(
       imageObj.width,
-      imageObj.height,
+      imageObj.height
     );
     canvas.width = width;
     canvas.height = height;
 
-    // Draw the image
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(imageObj, 0, 0, canvas.width, canvas.height);
 
-    // Apply watermark
-    applyWatermark(ctx, canvas.width, canvas.height);
-
-    updateModalCanvas();
-  }, [imageObj, config]);
+    applyWatermark(ctx, canvas.width, canvas.height, currentConfig);
+  }, [imageObj, currentConfig]);
 
   const updateModalCanvas = useCallback(() => {
-    const canvas = modalCanvasRef.current;
+    console.log("Updating modal canvas");
 
+    const canvas = modalCanvasRef.current;
     if (!canvas || !imageObj) return;
 
     const ctx = canvas.getContext("2d");
-
     if (!ctx) return;
 
-    // Calculate aspect ratio
     const aspectRatio = imageObj.width / imageObj.height;
 
-    // Set fixed width for preview and calculate height
     const previewWidth = 500;
     const previewHeight = previewWidth / aspectRatio;
 
-    // Set canvas dimensions
     canvas.width = previewWidth;
     canvas.height = previewHeight;
 
-    // Draw the image scaled to fit preview
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(imageObj, 0, 0, previewWidth, previewHeight);
 
-    // Apply watermark with scale factor
     const scaleFactor = previewWidth / imageObj.width;
-    applyWatermark(ctx, previewWidth, previewHeight, scaleFactor);
-  }, [imageObj, config]);
+    applyWatermark(
+      ctx,
+      previewWidth,
+      previewHeight,
+      editingConfig,
+      scaleFactor
+    );
+  }, [imageObj, editingConfig]);
 
   const applyWatermark = (
     ctx: CanvasRenderingContext2D,
     width: number,
     height: number,
-    scaleFactor = 1,
+    config: WatermarkConfig,
+    scaleFactor = 1
   ) => {
     ctx.save();
 
@@ -173,43 +190,12 @@ export default function WatermarkEditor({
     const r = Number.parseInt(hex.slice(1, 3), 16);
     const g = Number.parseInt(hex.slice(3, 5), 16);
     const b = Number.parseInt(hex.slice(5, 7), 16);
-
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
   };
 
-  const handleSave = () => {
-    onSave(config);
-    setIsModalOpen(false);
-  };
-
-  const updateConfig = (key: keyof WatermarkConfig, value: string | number) => {
-    setConfig((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const openModal = useCallback(
-    (isGlobal: boolean) => {
-      if (isGlobal) {
-        const storageGlobal = localStorage.getItem("watermark-config");
-
-        if (storageGlobal) {
-          setConfig(JSON.parse(storageGlobal));
-        } else {
-          localStorage.setItem("watermark-config", JSON.stringify(config));
-        }
-      }
-
-      setIsModalOpen(true);
-
-      setTimeout(() => {
-        updateModalCanvas();
-      });
-    },
-    [updateModalCanvas],
-  );
-
   const getBestFitDimensions = (
     originalWidth: number,
-    originalHeight: number,
+    originalHeight: number
   ) => {
     let bestFit = SEO_DIMENSIONS[0];
     let minDiff = Infinity;
@@ -241,47 +227,114 @@ export default function WatermarkEditor({
     }
   };
 
+  const openGlobalModal = () => {
+    setModalMode("global");
+    setEditingConfig({ ...globalConfig });
+    setTimeout(updateModalCanvas, 100);
+  };
+
+  const openSpecificModal = () => {
+    setModalMode("specific");
+    setEditingConfig({ ...currentConfig });
+    setTimeout(updateModalCanvas, 100);
+  };
+
+  const closeModal = () => {
+    setModalMode(null);
+  };
+
+  const applyGlobalToSpecific = () => {
+    setEditingConfig({ ...globalConfig });
+    setTimeout(updateModalCanvas, 50);
+  };
+
+  const handleSave = () => {
+    if (modalMode === "global") {
+      setGlobalConfig({ ...editingConfig });
+      localStorage.setItem(
+        "watermark-config-global",
+        JSON.stringify(editingConfig)
+      );
+    } else if (modalMode === "specific") {
+      setCurrentConfig({ ...editingConfig });
+      onSave({ ...editingConfig });
+    }
+    closeModal();
+  };
+
+  const updateEditingConfig = (
+    key: keyof WatermarkConfig,
+    value: string | number
+  ) => {
+    setEditingConfig((prev) => ({ ...prev, [key]: value }));
+    setTimeout(updateModalCanvas, 50);
+  };
+
+  const getModalTitle = () => {
+    return modalMode === "global"
+      ? "Configurar Marca d'água Global"
+      : "Configurar Marca d'água da Imagem";
+  };
+
+  const getModalDescription = () => {
+    return modalMode === "global"
+      ? "Configure o padrão de marca d'água que será usado como base para todas as imagens."
+      : "Configure a marca d'água específica para esta imagem. Você pode aplicar as configurações globais como ponto de partida.";
+  };
+
   return (
     <>
       <Button
         variant="secondary"
         size="sm"
         className="gap-2"
-        onClick={() => openModal(true)}
+        onClick={openGlobalModal}
       >
-        <Settings className="h-4 w-4" />
-        Configurar pre-set de Marca d&apos;água
+        <Globe className="h-4 w-4" />
+        Configurar Marca d&apos;água Global
       </Button>
 
       <div className="space-y-4">
         <div className="relative">
           <div className="aspect-video rounded-lg overflow-hidden bg-muted flex justify-center items-center">
-            <canvas
-              ref={canvasRef}
-              className="max-w-full h-auto object-contain"
-              style={{ display: isModalOpen ? "none" : "block" }}
-            />
+            {imageLoaded ? (
+              <canvas
+                ref={canvasRef}
+                className="max-w-full h-auto object-contain"
+              />
+            ) : (
+              <div className="text-muted-foreground">Carregando imagem...</div>
+            )}
           </div>
 
           <Button
             variant="secondary"
             size="sm"
             className="gap-2 absolute bottom-4 right-4"
-            onClick={() => openModal(false)}
+            onClick={openSpecificModal}
+            disabled={!imageLoaded}
           >
-            <Settings className="h-4 w-4" />
+            <ImageIcon className="h-4 w-4" />
             Configurar Marca d&apos;água
           </Button>
         </div>
       </div>
 
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog
+        open={modalMode !== null}
+        onOpenChange={(open) => !open && closeModal()}
+      >
         <DialogContent className="max-w-[90vw] h-[80%] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Configurar Marca d&apos;água</DialogTitle>
-            <DialogDescription>
-              Ajuste as configurações da marca d&apos;água para sua imagem.
-            </DialogDescription>
+            <DialogTitle className="flex items-center gap-2">
+              {modalMode === "global" ? (
+                <Globe className="h-5 w-5" />
+              ) : (
+                <ImageIcon className="h-5 w-5" />
+              )}
+              {getModalTitle()}
+            </DialogTitle>
+            <DialogDescription>{getModalDescription()}</DialogDescription>
           </DialogHeader>
 
           <div className="flex flex-col md:flex-row gap-6 py-4">
@@ -293,8 +346,10 @@ export default function WatermarkEditor({
                   </Label>
                   <Input
                     id="watermark-text"
-                    value={config.text}
-                    onChange={(e) => updateConfig("text", e.target.value)}
+                    value={editingConfig.text}
+                    onChange={(e) =>
+                      updateEditingConfig("text", e.target.value)
+                    }
                     placeholder="Digite o texto da marca d'água"
                     className="text-sm"
                   />
@@ -304,7 +359,7 @@ export default function WatermarkEditor({
                   <div className="flex justify-between">
                     <Label htmlFor="watermark-size">Tamanho</Label>
                     <span className="text-sm text-muted-foreground">
-                      {config.size}px
+                      {editingConfig.size}px
                     </span>
                   </div>
                   <Slider
@@ -312,8 +367,10 @@ export default function WatermarkEditor({
                     min={10}
                     max={100}
                     step={1}
-                    value={[config.size]}
-                    onValueChange={(value) => updateConfig("size", value[0])}
+                    value={[editingConfig.size]}
+                    onValueChange={(value) =>
+                      updateEditingConfig("size", value[0])
+                    }
                   />
                 </div>
 
@@ -321,7 +378,7 @@ export default function WatermarkEditor({
                   <div className="flex justify-between">
                     <Label htmlFor="watermark-opacity">Opacidade</Label>
                     <span className="text-sm text-muted-foreground">
-                      {Math.round(config.opacity * 100)}%
+                      {Math.round(editingConfig.opacity * 100)}%
                     </span>
                   </div>
                   <Slider
@@ -329,8 +386,10 @@ export default function WatermarkEditor({
                     min={0.1}
                     max={1}
                     step={0.05}
-                    value={[config.opacity]}
-                    onValueChange={(value) => updateConfig("opacity", value[0])}
+                    value={[editingConfig.opacity]}
+                    onValueChange={(value) =>
+                      updateEditingConfig("opacity", value[0])
+                    }
                   />
                 </div>
 
@@ -338,7 +397,7 @@ export default function WatermarkEditor({
                   <div className="flex justify-between">
                     <Label htmlFor="watermark-rotation">Rotação</Label>
                     <span className="text-sm text-muted-foreground">
-                      {config.rotation}°
+                      {editingConfig.rotation}°
                     </span>
                   </div>
                   <Slider
@@ -346,9 +405,9 @@ export default function WatermarkEditor({
                     min={-180}
                     max={180}
                     step={5}
-                    value={[config.rotation]}
+                    value={[editingConfig.rotation]}
                     onValueChange={(value) =>
-                      updateConfig("rotation", value[0])
+                      updateEditingConfig("rotation", value[0])
                     }
                   />
                 </div>
@@ -358,13 +417,15 @@ export default function WatermarkEditor({
                   <div className="flex items-center gap-2">
                     <div
                       className="w-8 h-8 rounded-md border"
-                      style={{ backgroundColor: config.color }}
+                      style={{ backgroundColor: editingConfig.color }}
                     />
                     <Input
                       id="watermark-color"
                       type="color"
-                      value={config.color}
-                      onChange={(e) => updateConfig("color", e.target.value)}
+                      value={editingConfig.color}
+                      onChange={(e) =>
+                        updateEditingConfig("color", e.target.value)
+                      }
                       className="w-full h-10 text-sm"
                     />
                   </div>
@@ -376,7 +437,7 @@ export default function WatermarkEditor({
                   <div className="flex justify-between">
                     <Label htmlFor="watermark-spacing-x">Espaçamento X</Label>
                     <span className="text-sm text-muted-foreground">
-                      {config.spacingX}px
+                      {editingConfig.spacingX}px
                     </span>
                   </div>
                   <Slider
@@ -384,9 +445,9 @@ export default function WatermarkEditor({
                     min={0}
                     max={500}
                     step={10}
-                    value={[config.spacingX]}
+                    value={[editingConfig.spacingX]}
                     onValueChange={(value) =>
-                      updateConfig("spacingX", value[0])
+                      updateEditingConfig("spacingX", value[0])
                     }
                   />
                 </div>
@@ -395,7 +456,7 @@ export default function WatermarkEditor({
                   <div className="flex justify-between">
                     <Label htmlFor="watermark-spacing-y">Espaçamento Y</Label>
                     <span className="text-sm text-muted-foreground">
-                      {config.spacingY}px
+                      {editingConfig.spacingY}px
                     </span>
                   </div>
                   <Slider
@@ -403,9 +464,9 @@ export default function WatermarkEditor({
                     min={0}
                     max={500}
                     step={10}
-                    value={[config.spacingY]}
+                    value={[editingConfig.spacingY]}
                     onValueChange={(value) =>
-                      updateConfig("spacingY", value[0])
+                      updateEditingConfig("spacingY", value[0])
                     }
                   />
                 </div>
@@ -414,7 +475,7 @@ export default function WatermarkEditor({
                   <div className="flex justify-between">
                     <Label htmlFor="watermark-position-x">Posição X</Label>
                     <span className="text-sm text-muted-foreground">
-                      {config.positionX}px
+                      {editingConfig.positionX}px
                     </span>
                   </div>
                   <Slider
@@ -422,9 +483,9 @@ export default function WatermarkEditor({
                     min={-500}
                     max={500}
                     step={1}
-                    value={[config.positionX]}
+                    value={[editingConfig.positionX]}
                     onValueChange={(value) =>
-                      updateConfig("positionX", value[0])
+                      updateEditingConfig("positionX", value[0])
                     }
                   />
                 </div>
@@ -433,7 +494,7 @@ export default function WatermarkEditor({
                   <div className="flex justify-between">
                     <Label htmlFor="watermark-position-y">Posição Y</Label>
                     <span className="text-sm text-muted-foreground">
-                      {config.positionY}px
+                      {editingConfig.positionY}px
                     </span>
                   </div>
                   <Slider
@@ -441,29 +502,50 @@ export default function WatermarkEditor({
                     min={-500}
                     max={500}
                     step={1}
-                    value={[config.positionY]}
+                    value={[editingConfig.positionY]}
                     onValueChange={(value) =>
-                      updateConfig("positionY", value[0])
+                      updateEditingConfig("positionY", value[0])
                     }
                   />
                 </div>
+
+                {modalMode === "specific" && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={applyGlobalToSpecific}
+                    className="w-full gap-2"
+                  >
+                    <Globe className="h-4 w-4" />
+                    Aplicar Configurações Globais
+                  </Button>
+                )}
               </div>
             </div>
 
             <div className="w-full md:w-3/5 rounded-lg overflow-hidden bg-muted border flex justify-center items-center">
-              <canvas
-                ref={modalCanvasRef}
-                className="max-w-full h-auto object-contain"
-              />
+              {imageLoaded ? (
+                <canvas
+                  ref={modalCanvasRef}
+                  className="max-w-full h-auto object-contain"
+                />
+              ) : (
+                <div className="text-muted-foreground">
+                  Imagem não disponível para preview
+                </div>
+              )}
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+            <Button variant="outline" onClick={closeModal}>
               Cancelar
             </Button>
-            <Button onClick={handleSave} disabled={!imageLoaded}>
-              Aplicar
+            <Button
+              onClick={handleSave}
+              disabled={!imageLoaded && modalMode === "specific"}
+            >
+              {modalMode === "global" ? "Salvar Global" : "Aplicar à Imagem"}
             </Button>
           </DialogFooter>
         </DialogContent>

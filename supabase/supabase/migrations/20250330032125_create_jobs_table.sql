@@ -50,9 +50,9 @@ CREATE TABLE job_images (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     job_id UUID NOT NULL REFERENCES jobs(id) ON DELETE CASCADE,
     "path" TEXT NOT NULL,
-    title TEXT,
-    "description" TEXT,
-    price TEXT,
+    title TEXT check(length(description) <= 255),
+    "description" TEXT check(length(description) <= 255),
+    price TEXT check(length(description) <= 255),
     visible BOOLEAN DEFAULT TRUE,
     categories JSONB,
     watermark_config JSONB,
@@ -61,25 +61,6 @@ CREATE TABLE job_images (
 );
 
 CREATE INDEX idx_job_images_job_id ON job_images(job_id);
-
-CREATE OR REPLACE FUNCTION validate_job_image_fields()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF LENGTH(NEW.description) > 255 THEN
-        RAISE EXCEPTION 'Description must be 255 characters or less';
-    END IF;
-    IF LENGTH(NEW.price) > 50 THEN
-        RAISE EXCEPTION 'Price must be 50 characters or less';
-    END IF;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER validate_job_images_fields
-BEFORE INSERT OR UPDATE ON job_images
-FOR EACH ROW
-EXECUTE FUNCTION validate_job_image_fields();
 
 CREATE TRIGGER update_job_images_updated_at
 BEFORE UPDATE ON job_images

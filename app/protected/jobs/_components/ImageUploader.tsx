@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ImagePlus, Trash2, Upload } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 
@@ -12,26 +12,48 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import WatermarkEditor from "@/app/protected/jobs/_components/WatermarkEditor";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ImageRegister, WatermarkConfig } from "@/types";
+import {
+  ImageRegister,
+  ImageRegisterPrototype,
+  WatermarkConfig,
+} from "@/types";
 
 interface ImageUploaderProps {
-  defaultImages?: ImageRegister[];
+  defaultImages?: ImageRegisterPrototype[];
 }
 
 export function ImageUploader({ defaultImages }: ImageUploaderProps) {
-  const [images, setImages] = useState<ImageRegister[]>(defaultImages || []);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [images, setImages] = useState<ImageRegisterPrototype[]>(
+    defaultImages || []
+  );
+  const [currentImage, setCurrentImage] =
+    useState<ImageRegisterPrototype | null>(null);
   const [newCategory, setNewCategory] = useState("");
 
-  const handleSaveWatermarkConfig = useCallback((config: WatermarkConfig) => {
-    setImages((prev) =>
-      prev.map((img) =>
-        img.id === selectedImage ? { ...img, watermark_config: config } : img
-      )
-    );
+  const handleSaveWatermarkConfig = useCallback(
+    (config: WatermarkConfig) => {
+      if (!currentImage) return;
 
-    toast("Configuração de marca d'água salva com sucesso!");
-  }, []);
+      setImages((prev) =>
+        prev.map((img) =>
+          img.id === currentImage.id
+            ? { ...img, watermark_config: config }
+            : img
+        )
+      );
+
+      setCurrentImage((prev) =>
+        prev ? { ...prev, watermark_config: config } : null
+      );
+
+      toast("Configuração de marca d'água salva com sucesso!");
+    },
+    [currentImage]
+  );
+
+  useEffect(() => {
+    console.log(images);
+  }, [images]);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -40,67 +62,75 @@ export function ImageUploader({ defaultImages }: ImageUploaderProps) {
 
     onDrop: (acceptedFiles) => {
       const newImages = acceptedFiles.map((file) => ({
-        id: Math.random().toString(36).substring(2, 9),
+        id:
+          "temp-" +
+          new Date().getTime() +
+          Math.random().toString(36).substring(2, 15),
         file,
-        preview: URL.createObjectURL(file),
+        url: URL.createObjectURL(file),
+        path: "",
         title: "",
         description: "",
         price: "",
         categories: [],
         watermark_config: null,
+        visible: true,
       }));
 
-      setImages((prev) => [...prev, ...newImages]);
+      setImages((prev) => [...prev, ...newImages] as ImageRegisterPrototype[]);
 
-      if (newImages.length > 0 && !selectedImage) {
-        setSelectedImage(newImages[0].id);
+      if (newImages.length > 0) {
+        setCurrentImage(newImages[0]);
       }
     },
   });
 
-  const handleRemoveImage = (id: string) => {
-    setImages((prev) => prev.filter((img) => img.id !== id));
+  const handleRemoveImage = (imageToRemove: ImageRegisterPrototype) => {
+    setImages((prev) => prev.filter((img) => img.id !== imageToRemove.id));
 
-    if (selectedImage === id) {
-      const remaining = images.filter((img) => img.id !== id);
-      setSelectedImage(remaining.length > 0 ? remaining[0].id : null);
+    if (currentImage && currentImage.id === imageToRemove.id) {
+      const remaining = images.filter((img) => img.id !== imageToRemove.id);
+      setCurrentImage(remaining.length > 0 ? remaining[0] : null);
     }
   };
 
-  const handleUpdateImageField = (
-    id: string,
-    field: keyof ImageRegister,
-    value: string | string[]
+  const handleUpdateImageField = <K extends keyof ImageRegister>(
+    field: K,
+    value: ImageRegister[K]
   ) => {
+    if (!currentImage) return;
+
     setImages((prev) =>
-      prev.map((img) => (img.id === id ? { ...img, [field]: value } : img))
+      prev.map((img) =>
+        img.id === currentImage.id ? { ...img, [field]: value } : img
+      )
     );
+
+    setCurrentImage((prev) => (prev ? { ...prev, [field]: value } : null));
   };
 
-  const handleAddCategory = (id: string) => {
-    if (!newCategory.trim()) return;
-
-    const currentImage = images.find((img) => img.id === id);
-
-    if (currentImage && !currentImage.categories.includes(newCategory)) {
-      handleUpdateImageField(id, "categories", [
-        ...currentImage.categories,
-        newCategory,
-      ]);
+  const handleAddCategory = () => {
+    if (!newCategory.trim() || !currentImage) {
+      return;
     }
+
+    if (!currentImage.categories.includes(newCategory)) {
+      const updatedCategories = [...currentImage.categories, newCategory];
+      handleUpdateImageField("categories", updatedCategories);
+    }
+
     setNewCategory("");
   };
 
-  const handleRemoveCategory = (id: string, category: string) => {
-    const currentImage = images.find((img) => img.id === id);
-
-    if (currentImage) {
-      handleUpdateImageField(
-        id,
-        "categories",
-        currentImage.categories.filter((c) => c !== category)
-      );
+  const handleRemoveCategory = (category: string) => {
+    if (!currentImage) {
+      return;
     }
+
+    const updatedCategories = currentImage.categories.filter(
+      (c) => c !== category
+    );
+    handleUpdateImageField("categories", updatedCategories);
   };
 
   const handleUpload = () => {
@@ -108,12 +138,8 @@ export function ImageUploader({ defaultImages }: ImageUploaderProps) {
       description: `${images.length} imagens foram enviadas para o servidor.`,
     });
     setImages([]);
-    setSelectedImage(null);
+    setCurrentImage(null);
   };
-
-  const currentImage = selectedImage
-    ? images.find((img) => img.id === selectedImage)
-    : null;
 
   return (
     <>
@@ -155,11 +181,11 @@ export function ImageUploader({ defaultImages }: ImageUploaderProps) {
                 {images.map((image) => (
                   <div
                     key={image.id}
-                    className={`relative aspect-square rounded-md overflow-hidden cursor-pointer border-2 ${selectedImage === image.id ? "border-primary" : "border-transparent"}`}
-                    onClick={() => setSelectedImage(image.id)}
+                    className={`relative aspect-square rounded-md overflow-hidden cursor-pointer border-2 ${currentImage?.id === image.id ? "border-primary" : "border-transparent"}`}
+                    onClick={() => setCurrentImage(image)}
                   >
                     <img
-                      src={image.path || "/placeholder.svg"}
+                      src={image.url}
                       alt={image.title || "Preview"}
                       className="h-full w-full object-cover"
                     />
@@ -170,7 +196,7 @@ export function ImageUploader({ defaultImages }: ImageUploaderProps) {
                       className="absolute top-1 right-1 h-6 w-6"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleRemoveImage(image.id);
+                        handleRemoveImage(image);
                       }}
                     >
                       <Trash2 className="h-3 w-3" />
@@ -193,8 +219,8 @@ export function ImageUploader({ defaultImages }: ImageUploaderProps) {
           {currentImage ? (
             <div className="space-y-4">
               <WatermarkEditor
-                image={images.find((img) => img.id === selectedImage) ?? null}
-                initialConfig={watermarkConfig || undefined}
+                image={currentImage}
+                initialConfig={currentImage.watermark_config || undefined}
                 onSave={handleSaveWatermarkConfig}
               />
 
@@ -205,11 +231,7 @@ export function ImageUploader({ defaultImages }: ImageUploaderProps) {
                     id="title"
                     value={currentImage.title}
                     onChange={(e) =>
-                      handleUpdateImageField(
-                        currentImage.id,
-                        "title",
-                        e.target.value
-                      )
+                      handleUpdateImageField("title", e.target.value)
                     }
                     placeholder="Título da imagem"
                   />
@@ -221,11 +243,7 @@ export function ImageUploader({ defaultImages }: ImageUploaderProps) {
                     id="description"
                     value={currentImage.description}
                     onChange={(e) =>
-                      handleUpdateImageField(
-                        currentImage.id,
-                        "description",
-                        e.target.value
-                      )
+                      handleUpdateImageField("description", e.target.value)
                     }
                     placeholder="Descrição da imagem"
                     rows={3}
@@ -238,11 +256,7 @@ export function ImageUploader({ defaultImages }: ImageUploaderProps) {
                     id="price"
                     value={currentImage.price}
                     onChange={(e) =>
-                      handleUpdateImageField(
-                        currentImage.id,
-                        "price",
-                        e.target.value
-                      )
+                      handleUpdateImageField("price", e.target.value)
                     }
                     placeholder="0,00"
                     type="number"
@@ -265,9 +279,7 @@ export function ImageUploader({ defaultImages }: ImageUploaderProps) {
                           variant="ghost"
                           size="icon"
                           className="h-4 w-4 ml-1 hover:bg-transparent"
-                          onClick={() =>
-                            handleRemoveCategory(currentImage.id, category)
-                          }
+                          onClick={() => handleRemoveCategory(category)}
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -282,14 +294,11 @@ export function ImageUploader({ defaultImages }: ImageUploaderProps) {
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
-                          handleAddCategory(currentImage.id);
+                          handleAddCategory();
                         }
                       }}
                     />
-                    <Button
-                      type="button"
-                      onClick={() => handleAddCategory(currentImage.id)}
-                    >
+                    <Button type="button" onClick={handleAddCategory}>
                       Adicionar
                     </Button>
                   </div>

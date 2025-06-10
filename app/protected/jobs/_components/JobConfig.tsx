@@ -136,7 +136,7 @@ export default function JobConfig({
 
     if (propsData?.id) {
       ({ error, data: jobData } = await updateJob({
-        id: propsData?.id ?? null,
+        id: propsData?.id,
         title: values.title,
         seo_description: values.seo_description,
         seo_keywords: values.seo_keywords,
@@ -144,7 +144,6 @@ export default function JobConfig({
       } as Job));
     } else {
       ({ error, data: jobData } = await saveJob({
-        id: propsData?.id ?? null,
         title: values.title,
         seo_description: values.seo_description,
         seo_keywords: values.seo_keywords,

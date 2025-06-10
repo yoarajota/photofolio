@@ -13,26 +13,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Globe, Image as ImageIcon } from "lucide-react";
-import { ImageRegister, WatermarkConfig } from "@/types";
-
+import { Globe, Image as ImageIcon, RotateCcw } from "lucide-react";
+import { ImageRegisterPrototype, WatermarkConfig } from "@/types";
+import { useGlobalWatermark } from "@/utils/hooks/use-global-watermark";
 interface WatermarkEditorProps {
-  image: ImageRegister | null;
+  image: ImageRegisterPrototype | null;
   onSave: (watermarkConfig: WatermarkConfig) => void;
   initialConfig?: WatermarkConfig;
 }
-
-const DEFAULT_CONFIG: WatermarkConfig = {
-  text: "© Minha Marca",
-  size: 24,
-  opacity: 0.7,
-  color: "#ffffff",
-  rotation: 0,
-  spacingX: 100,
-  spacingY: 100,
-  positionX: 0,
-  positionY: 0,
-};
 
 const SEO_DIMENSIONS = [
   { width: 1600, height: 900 },
@@ -48,42 +36,38 @@ export default function WatermarkEditor({
   onSave,
   initialConfig,
 }: WatermarkEditorProps) {
+  console.log("WatermarkEditor rendered with image:", image, initialConfig);
+
+  const { globalConfig, saveGlobalConfig, resetToDefault } =
+    useGlobalWatermark();
+
   const [currentConfig, setCurrentConfig] = useState<WatermarkConfig>(
-    initialConfig || DEFAULT_CONFIG
+    initialConfig ?? globalConfig
   );
-
-  console.log("Current Config:", initialConfig);
-
   const [editingConfig, setEditingConfig] =
-    useState<WatermarkConfig>(DEFAULT_CONFIG);
-
+    useState<WatermarkConfig>(globalConfig);
   const [modalMode, setModalMode] = useState<ModalMode>(null);
-  const [globalConfig, setGlobalConfig] =
-    useState<WatermarkConfig>(DEFAULT_CONFIG);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const modalCanvasRef = useRef<HTMLCanvasElement>(null);
+
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageObj, setImageObj] = useState<HTMLImageElement | null>(null);
 
   useEffect(() => {
-    const storedGlobal = localStorage.getItem("watermark-config-global");
-    if (storedGlobal) {
-      const parsed = JSON.parse(storedGlobal);
-      setGlobalConfig(parsed);
-
-      if (!initialConfig) {
-        setCurrentConfig(parsed);
-      }
+    if (!initialConfig) {
+      setCurrentConfig(globalConfig);
     }
-  }, [initialConfig]);
+  }, [image]);
 
   useEffect(() => {
-    if (!image?.path) return;
+    if (!image?.url && !image?.path) {
+      return;
+    }
 
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.src = image.path;
+    img.src = image.url || image.path || "";
 
     img.onload = () => {
       setImageObj(img);
@@ -99,55 +83,39 @@ export default function WatermarkEditor({
     updateMainCanvas();
   }, [imageObj, currentConfig]);
 
-  const updateMainCanvas = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !imageObj) return;
+  const getBestFitDimensions = (
+    originalWidth: number,
+    originalHeight: number
+  ) => {
+    let bestFit = SEO_DIMENSIONS[0];
+    let minDiff = Infinity;
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    SEO_DIMENSIONS.forEach(({ width, height }) => {
+      const widthDiff = Math.abs(originalWidth - width);
+      const heightDiff = Math.abs(originalHeight - height);
+      const diff = widthDiff + heightDiff;
 
-    const { width, height } = getBestFitDimensions(
-      imageObj.width,
-      imageObj.height
-    );
-    canvas.width = width;
-    canvas.height = height;
+      if (diff < minDiff) {
+        minDiff = diff;
+        bestFit = { width, height };
+      }
+    });
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(imageObj, 0, 0, canvas.width, canvas.height);
+    const aspectRatio = originalWidth / originalHeight;
+    const bestFitAspectRatio = bestFit.width / bestFit.height;
 
-    applyWatermark(ctx, canvas.width, canvas.height, currentConfig);
-  }, [imageObj, currentConfig]);
-
-  const updateModalCanvas = useCallback(() => {
-    console.log("Updating modal canvas");
-
-    const canvas = modalCanvasRef.current;
-    if (!canvas || !imageObj) return;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const aspectRatio = imageObj.width / imageObj.height;
-
-    const previewWidth = 500;
-    const previewHeight = previewWidth / aspectRatio;
-
-    canvas.width = previewWidth;
-    canvas.height = previewHeight;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(imageObj, 0, 0, previewWidth, previewHeight);
-
-    const scaleFactor = previewWidth / imageObj.width;
-    applyWatermark(
-      ctx,
-      previewWidth,
-      previewHeight,
-      editingConfig,
-      scaleFactor
-    );
-  }, [imageObj, editingConfig]);
+    if (aspectRatio > bestFitAspectRatio) {
+      return {
+        width: bestFit.width,
+        height: Math.round(bestFit.width / aspectRatio),
+      };
+    } else {
+      return {
+        width: Math.round(bestFit.height * aspectRatio),
+        height: bestFit.height,
+      };
+    }
+  };
 
   const applyWatermark = (
     ctx: CanvasRenderingContext2D,
@@ -193,39 +161,57 @@ export default function WatermarkEditor({
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
   };
 
-  const getBestFitDimensions = (
-    originalWidth: number,
-    originalHeight: number
-  ) => {
-    let bestFit = SEO_DIMENSIONS[0];
-    let minDiff = Infinity;
-
-    SEO_DIMENSIONS.forEach(({ width, height }) => {
-      const widthDiff = Math.abs(originalWidth - width);
-      const heightDiff = Math.abs(originalHeight - height);
-      const diff = widthDiff + heightDiff;
-
-      if (diff < minDiff) {
-        minDiff = diff;
-        bestFit = { width, height };
-      }
-    });
-
-    const aspectRatio = originalWidth / originalHeight;
-    const bestFitAspectRatio = bestFit.width / bestFit.height;
-
-    if (aspectRatio > bestFitAspectRatio) {
-      return {
-        width: bestFit.width,
-        height: Math.round(bestFit.width / aspectRatio),
-      };
-    } else {
-      return {
-        width: Math.round(bestFit.height * aspectRatio),
-        height: bestFit.height,
-      };
+  const updateMainCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !imageObj) {
+      return;
     }
-  };
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      return;
+    }
+
+    const { width, height } = getBestFitDimensions(
+      imageObj.width,
+      imageObj.height
+    );
+    canvas.width = width;
+    canvas.height = height;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(imageObj, 0, 0, canvas.width, canvas.height);
+
+    applyWatermark(ctx, canvas.width, canvas.height, currentConfig);
+  }, [imageObj, currentConfig]);
+
+  const updateModalCanvas = useCallback(() => {
+    const canvas = modalCanvasRef.current;
+    if (!canvas || !imageObj) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const aspectRatio = imageObj.width / imageObj.height;
+
+    const previewWidth = 500;
+    const previewHeight = previewWidth / aspectRatio;
+
+    canvas.width = previewWidth;
+    canvas.height = previewHeight;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(imageObj, 0, 0, previewWidth, previewHeight);
+
+    const scaleFactor = previewWidth / imageObj.width;
+    applyWatermark(
+      ctx,
+      previewWidth,
+      previewHeight,
+      editingConfig,
+      scaleFactor
+    );
+  }, [imageObj, editingConfig]);
 
   const openGlobalModal = () => {
     setModalMode("global");
@@ -250,16 +236,21 @@ export default function WatermarkEditor({
 
   const handleSave = () => {
     if (modalMode === "global") {
-      setGlobalConfig({ ...editingConfig });
-      localStorage.setItem(
-        "watermark-config-global",
-        JSON.stringify(editingConfig)
-      );
+      saveGlobalConfig({ ...editingConfig });
     } else if (modalMode === "specific") {
       setCurrentConfig({ ...editingConfig });
       onSave({ ...editingConfig });
     }
+
     closeModal();
+  };
+
+  const handleResetToDefault = () => {
+    if (modalMode === "global") {
+      const defaultConfig = resetToDefault();
+      setEditingConfig({ ...defaultConfig });
+      setTimeout(updateModalCanvas, 50);
+    }
   };
 
   const updateEditingConfig = (
@@ -296,16 +287,20 @@ export default function WatermarkEditor({
 
       <div className="space-y-4">
         <div className="relative">
-          <div className="aspect-video rounded-lg overflow-hidden bg-muted flex justify-center items-center">
-            {imageLoaded ? (
-              <canvas
-                ref={canvasRef}
-                className="max-w-full h-auto object-contain"
-              />
-            ) : (
-              <div className="text-muted-foreground">Carregando imagem...</div>
-            )}
-          </div>
+          {!modalMode && (
+            <div className="aspect-video rounded-lg overflow-hidden bg-muted flex justify-center items-center">
+              {imageLoaded ? (
+                <canvas
+                  ref={canvasRef}
+                  className="max-w-full h-auto object-contain"
+                />
+              ) : (
+                <div className="text-muted-foreground">
+                  Carregando imagem...
+                </div>
+              )}
+            </div>
+          )}
 
           <Button
             variant="secondary"
@@ -509,17 +504,31 @@ export default function WatermarkEditor({
                   />
                 </div>
 
-                {modalMode === "specific" && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={applyGlobalToSpecific}
-                    className="w-full gap-2"
-                  >
-                    <Globe className="h-4 w-4" />
-                    Aplicar Configurações Globais
-                  </Button>
-                )}
+                <div className="flex gap-2">
+                  {modalMode === "specific" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={applyGlobalToSpecific}
+                      className="w-full gap-2"
+                    >
+                      <Globe className="h-4 w-4" />
+                      Aplicar Configurações Globais
+                    </Button>
+                  )}
+
+                  {modalMode === "global" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleResetToDefault}
+                      className="w-full gap-2"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      Restaurar Padrão
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
 

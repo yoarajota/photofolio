@@ -31,3 +31,8 @@ export type ImageRegister = {
   categories: string[];
   watermark_config: WatermarkConfig;
 };
+
+export type ImageRegisterPrototype = ImageRegister & {
+  url?: string;
+  file?: File;
+};
